@@ -1,7 +1,6 @@
 import { env } from '../lib/env';
 
 const GOOGLE_MAPS_API_KEY = env.VITE_GOOGLE_MAPS_KEY;
-const LIBRARIES = ["places"];
 
 let googleMapsPromise = null;
 

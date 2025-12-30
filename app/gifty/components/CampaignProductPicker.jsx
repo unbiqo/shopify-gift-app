@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import PropTypes from 'prop-types'
 import { Package, Search, X } from 'lucide-react'
 import { env } from '../lib/env'
 
@@ -288,4 +289,10 @@ export const CampaignProductPicker = ({
       )}
     </div>
   )
+}
+
+CampaignProductPicker.propTypes = {
+  selectedProducts: PropTypes.arrayOf(PropTypes.object),
+  onProductsSelected: PropTypes.func,
+  onRemoveProduct: PropTypes.func
 }

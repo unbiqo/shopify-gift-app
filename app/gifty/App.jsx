@@ -1,8 +1,9 @@
-import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import PropTypes from 'prop-types';
 import {
   Layout, Package, Palette, Settings, ChevronRight, ChevronLeft,
-  Info, Plus, Home, Users, Copy, ExternalLink, Download,
-  AlertTriangle, CheckCircle, XCircle, Search, Filter,
+  Info, Plus, Home, Users, Download,
+  AlertTriangle, CheckCircle, Search,
   Loader2, Shield, MapPin, ShoppingCart, DollarSign, Globe, FileText,
   Signal, Wifi, Battery, RefreshCw, ArrowUpDown, Edit3, CircleHelp
 } from 'lucide-react';
@@ -63,6 +64,67 @@ const SHIPPING_ZONES = [
 ];
 const MIN_ADDRESS_LENGTH = 10;
 
+const campaignShape = {
+  askCustomQuestion: PropTypes.bool,
+  brandColor: PropTypes.string,
+  brandLogo: PropTypes.string,
+  brandName: PropTypes.string,
+  customQuestionLabel: PropTypes.string,
+  customQuestionRequired: PropTypes.bool,
+  gridTwoByTwo: PropTypes.bool,
+  hideInactiveProducts: PropTypes.bool,
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  linkText: PropTypes.string,
+  linkToStore: PropTypes.string,
+  merchantId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  requireSecondConsent: PropTypes.bool,
+  secondConsentText: PropTypes.string,
+  selectedProductIds: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  ),
+  shippingZone: PropTypes.string,
+  shop: PropTypes.string,
+  showConsentCheckbox: PropTypes.bool,
+  showInstagramField: PropTypes.bool,
+  showPhoneField: PropTypes.bool,
+  showSoldOut: PropTypes.bool,
+  showTiktokField: PropTypes.bool,
+  submitButtonText: PropTypes.string,
+  termsConsentText: PropTypes.string,
+  welcomeMessage: PropTypes.string
+};
+
+const campaignConfigShape = {
+  ...campaignShape,
+  allowQuantitySelector: PropTypes.bool,
+  blockDuplicateOrders: PropTypes.bool,
+  customerTags: PropTypes.string,
+  discountCode: PropTypes.string,
+  emailConsentText: PropTypes.string,
+  emailOptIn: PropTypes.bool,
+  enableBilling: PropTypes.bool,
+  itemLimit: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  keepDraft: PropTypes.bool,
+  maxCartValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  name: PropTypes.string,
+  orderLimitPerLink: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  orderTags: PropTypes.string,
+  restrictedCountries: PropTypes.string,
+  slug: PropTypes.string
+};
+
+const merchantUsageShape = {
+  activePlan: PropTypes.string,
+  limitReached: PropTypes.bool,
+  merchantId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  shop: PropTypes.string,
+  totalClaimsCount: PropTypes.number
+};
+
+const usageShape = {
+  limitReached: PropTypes.bool
+};
+
 const Toggle = ({ enabled, onChange, label }) => (
   <button
     type="button"
@@ -78,6 +140,12 @@ const Toggle = ({ enabled, onChange, label }) => (
   </button>
 );
 
+Toggle.propTypes = {
+  enabled: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired
+};
+
 const RuleSection = ({ title, icon: Icon, children }) => (
   <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
     <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/70 flex items-center gap-2">
@@ -87,6 +155,12 @@ const RuleSection = ({ title, icon: Icon, children }) => (
     <div className="p-5 space-y-4">{children}</div>
   </div>
 );
+
+RuleSection.propTypes = {
+  title: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired,
+  children: PropTypes.node.isRequired
+};
 
 const RuleToggle = ({ label, description, enabled, onChange }) => (
   <div className="flex items-center justify-between py-1">
@@ -104,6 +178,13 @@ const RuleToggle = ({ label, description, enabled, onChange }) => (
     <Toggle enabled={enabled} onChange={onChange} label={label} />
   </div>
 );
+
+RuleToggle.propTypes = {
+  label: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  enabled: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired
+};
 
 const STATUS_CONFIG = {
   pending: {
@@ -163,6 +244,10 @@ const StatusBadge = ({ status }) => {
       )}
     </div>
   );
+};
+
+StatusBadge.propTypes = {
+  status: PropTypes.string
 };
 
 /* --- CLAIM EXPERIENCE --- */
@@ -365,8 +450,10 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
     setFormData((prev) => ({ ...prev, phone: fullE164 }));
     setCountrySearch('');
     setFieldErrors((prev) => {
-      const { phone, ...rest } = prev;
-      return rest;
+      if (!('phone' in prev)) return prev;
+      const next = { ...prev };
+      delete next.phone;
+      return next;
     });
     setIsCountryOpen(false);
   }, [getLengthRules, phoneDigits]);
@@ -381,10 +468,12 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
     setPhoneDigits(trimmedDigits);
     setFormData((prev) => ({ ...prev, phone: fullE164 }));
     setFieldErrors((prev) => {
-      const { phone, ...rest } = prev;
-      return rest;
+      if (!('phone' in prev)) return prev;
+      const next = { ...prev };
+      delete next.phone;
+      return next;
     });
-  }, [campaign.shippingZone]);
+  }, [campaign.shippingZone, getLengthRules, phoneDigits]);
 
   useEffect(() => {
     const handleGlobalClick = (event) => {
@@ -488,8 +577,9 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
     setFieldErrors((prev) => {
       if (!message) {
         if (!(field in prev)) return prev;
-        const { [field]: _, ...rest } = prev;
-        return rest;
+        const next = { ...prev };
+        delete next[field];
+        return next;
       }
       return { ...prev, [field]: message };
     });
@@ -560,7 +650,6 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
     return errors;
   };
 
-  const isConsentRequired = showConsentCheckbox;
   const baseFieldsComplete = Boolean(formData.email && isAddressValid(formData.address, structuredAddress));
   const phoneRules = getLengthRules(selectedCountry);
   const phoneMeetsRules = phoneDigits.length >= phoneRules.minLength && phoneDigits.length <= phoneRules.maxLength;
@@ -878,11 +967,13 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
                 const showSoldOut = campaign.showSoldOut !== false;
                 if (isSoldOut && !showSoldOut) return null;
                 return (
-                  <div
+                  <button
                     key={p.id}
+                    type="button"
                     onClick={() => {
                       if (!isDisabled) toggleSelection(p.id);
                     }}
+                    disabled={isDisabled}
                     className={`group relative cursor-pointer transition-all ${isSelected ? 'ring-2 ring-offset-2' : ''} ${isDisabled ? 'opacity-50' : ''}`}
                     style={{ ringColor: isSelected ? campaign.brandColor : 'transparent' }}
                   >
@@ -917,7 +1008,7 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
                       <div className="text-xs font-medium text-gray-900 truncate">{p.title}</div>
                       <div className="text-[11px] text-gray-500">${p.price}</div>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -1115,13 +1206,14 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
           {addressSuggestions.length > 0 && (
             <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
               {addressSuggestions.map((addr) => (
-                <div
+                <button
                   key={addr.id}
+                  type="button"
                   className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm"
                   onClick={() => handleAddressSelect(addr)}
                 >
                   {addr.label}
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -1183,6 +1275,13 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
       </div>
     </div>
   );
+};
+ClaimExperience.propTypes = {
+  campaign: PropTypes.shape(campaignShape).isRequired,
+  products: PropTypes.arrayOf(PropTypes.object),
+  isPreview: PropTypes.bool,
+  onSubmit: PropTypes.func,
+  usage: PropTypes.shape(usageShape)
 };
 /* --- ORDERS DASHBOARD --- */
 const OrdersDashboard = ({ onNavigateDashboard }) => {
@@ -1809,6 +1908,10 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
   );
 };
 
+OrdersDashboard.propTypes = {
+  onNavigateDashboard: PropTypes.func.isRequired
+};
+
 /* --- CAMPAIGN DASHBOARD --- */
 const DashboardHome = ({
   campaigns,
@@ -2027,6 +2130,17 @@ const DashboardHome = ({
   );
 };
 
+DashboardHome.propTypes = {
+  campaigns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  merchantUsage: PropTypes.shape(merchantUsageShape),
+  currentView: PropTypes.string,
+  onCreateCampaign: PropTypes.func.isRequired,
+  onDeleteCampaign: PropTypes.func.isRequired,
+  onEditCampaign: PropTypes.func.isRequired,
+  onViewOrders: PropTypes.func.isRequired,
+  onViewSettings: PropTypes.func.isRequired
+};
+
 const SettingsPage = ({
   merchantUsage,
   currentView,
@@ -2241,6 +2355,14 @@ const SettingsPage = ({
   );
 };
 
+SettingsPage.propTypes = {
+  merchantUsage: PropTypes.shape(merchantUsageShape),
+  currentView: PropTypes.string,
+  onViewDashboard: PropTypes.func.isRequired,
+  onViewOrders: PropTypes.func.isRequired,
+  onViewSettings: PropTypes.func.isRequired
+};
+
 /* --- CAMPAIGN BUILDER (Restored Full Functionality) --- */
 const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop, merchantId }) => {
   const [activeTab, setActiveTab] = useState('details');
@@ -2373,6 +2495,12 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
     </button>
   );
 
+  TabBtn.propTypes = {
+    id: PropTypes.string.isRequired,
+    icon: PropTypes.elementType.isRequired,
+    label: PropTypes.string.isRequired
+  };
+
   return (
     <div className="flex h-screen bg-gray-50 font-sans text-gray-900 overflow-hidden">
       {/* Editor Panel */}
@@ -2399,15 +2527,17 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
             {activeTab === 'details' && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="campaign-name">Campaign Name</label>
                   <input 
+                    id="campaign-name"
                     value={data.name} onChange={e => updateField('name', e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Welcome Message</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="campaign-welcome-message">Welcome Message</label>
                   <textarea 
+                    id="campaign-welcome-message"
                     value={data.welcomeMessage} onChange={e => updateField('welcomeMessage', e.target.value)}
                     rows={4}
                     className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
@@ -2427,8 +2557,9 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
             {activeTab === 'branding' && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Brand Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="campaign-brand-name">Brand Name</label>
                   <input
+                    id="campaign-brand-name"
                     value={data.brandName}
                     onChange={(e) => updateField('brandName', e.target.value)}
                     placeholder="Your Brand"
@@ -2436,9 +2567,9 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">Brand Color</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-3" htmlFor="campaign-brand-color">Brand Color</label>
                   <div className="flex gap-4">
-                    <input type="color" value={data.brandColor} onChange={e => updateField('brandColor', e.target.value)} className="h-10 w-10 p-1 rounded border" />
+                    <input id="campaign-brand-color" type="color" value={data.brandColor} onChange={e => updateField('brandColor', e.target.value)} className="h-10 w-10 p-1 rounded border" />
                     <input type="text" value={data.brandColor} onChange={e => updateField('brandColor', e.target.value)} className="flex-1 px-4 rounded-lg border" />
                   </div>
                 </div>
@@ -2451,7 +2582,7 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <label className="block text-xs font-semibold text-gray-700">Item Limit</label>
+                        <label className="block text-xs font-semibold text-gray-700" htmlFor="campaign-item-limit">Item Limit</label>
                         <div className="group relative flex items-center">
                           <Info size={12} className="text-gray-400 hover:text-indigo-600 cursor-help transition-colors" />
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none text-center">
@@ -2460,11 +2591,11 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                           </div>
                         </div>
                       </div>
-                      <input type="number" min="1" max="10" value={data.itemLimit} onChange={e => updateField('itemLimit', parseInt(e.target.value))} className="w-full px-3 py-2 rounded-lg border" />
+                      <input id="campaign-item-limit" type="number" min="1" max="10" value={data.itemLimit} onChange={e => updateField('itemLimit', parseInt(e.target.value))} className="w-full px-3 py-2 rounded-lg border" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <label className="block text-xs font-semibold text-gray-700">Order Limit per Link</label>
+                        <label className="block text-xs font-semibold text-gray-700" htmlFor="campaign-order-limit">Order Limit per Link</label>
                         <div className="group relative flex items-center">
                           <Info size={12} className="text-gray-400 hover:text-indigo-600 cursor-help transition-colors" />
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none text-center">
@@ -2473,11 +2604,11 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                           </div>
                         </div>
                       </div>
-                      <input type="number" value={data.orderLimitPerLink} onChange={e => updateField('orderLimitPerLink', e.target.value)} placeholder="Unlimited" className="w-full px-3 py-2 rounded-lg border" />
+                      <input id="campaign-order-limit" type="number" value={data.orderLimitPerLink} onChange={e => updateField('orderLimitPerLink', e.target.value)} placeholder="Unlimited" className="w-full px-3 py-2 rounded-lg border" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <label className="block text-xs font-semibold text-gray-700">Max Cart Value ($)</label>
+                        <label className="block text-xs font-semibold text-gray-700" htmlFor="campaign-max-cart-value">Max Cart Value ($)</label>
                         <div className="group relative flex items-center">
                           <Info size={12} className="text-gray-400 hover:text-indigo-600 cursor-help transition-colors" />
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none text-center">
@@ -2486,7 +2617,7 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                           </div>
                         </div>
                       </div>
-                      <input type="number" value={data.maxCartValue} onChange={e => updateField('maxCartValue', e.target.value)} placeholder="No Limit" className="w-full px-3 py-2 rounded-lg border" />
+                      <input id="campaign-max-cart-value" type="number" value={data.maxCartValue} onChange={e => updateField('maxCartValue', e.target.value)} placeholder="No Limit" className="w-full px-3 py-2 rounded-lg border" />
                     </div>
                   </div>
                   <div className="pt-2">
@@ -2522,8 +2653,8 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
 
                 <RuleSection title="Content & Consent" icon={Shield}>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Terms Consent Text</label>
-                    <textarea rows={2} className="w-full px-3 py-2 rounded-lg border text-sm" value={data.termsConsentText} onChange={e => updateField('termsConsentText', e.target.value)} placeholder="I consent to..." />
+                    <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="campaign-terms-consent-text">Terms Consent Text</label>
+                    <textarea id="campaign-terms-consent-text" rows={2} className="w-full px-3 py-2 rounded-lg border text-sm" value={data.termsConsentText} onChange={e => updateField('termsConsentText', e.target.value)} placeholder="I consent to..." />
                   </div>
                   
                   <div className="pt-3">
@@ -2541,8 +2672,8 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                   </div>
 
                   <div className="pt-3">
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Submit Button Text</label>
-                    <input className="w-full px-3 py-2 rounded-lg border text-sm" value={data.submitButtonText} onChange={e => updateField('submitButtonText', e.target.value)} placeholder="Confirm & Ship" />
+                    <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="campaign-submit-text">Submit Button Text</label>
+                    <input id="campaign-submit-text" className="w-full px-3 py-2 rounded-lg border text-sm" value={data.submitButtonText} onChange={e => updateField('submitButtonText', e.target.value)} placeholder="Confirm & Ship" />
                   </div>
                 </RuleSection>
 
@@ -2552,9 +2683,9 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                     <RuleToggle label="Hide Inactive" description="Hide products that are archived in Shopify." enabled={data.hideInactiveProducts} onChange={v => updateField('hideInactiveProducts', v)} />
                     
                     <div className="pt-3 border-t border-gray-100">
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">Link to Store</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="campaign-link-to-store">Link to Store</label>
                       <div className="grid grid-cols-2 gap-2">
-                        <input className="px-3 py-2 rounded-lg border text-sm" placeholder="myshop.com" value={data.linkToStore} onChange={e => updateField('linkToStore', e.target.value)} />
+                        <input id="campaign-link-to-store" className="px-3 py-2 rounded-lg border text-sm" placeholder="myshop.com" value={data.linkToStore} onChange={e => updateField('linkToStore', e.target.value)} />
                         <input className="px-3 py-2 rounded-lg border text-sm" placeholder="Link Text" value={data.linkText} onChange={e => updateField('linkText', e.target.value)} />
                       </div>
                     </div>
@@ -2576,8 +2707,8 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                       </div>
                     </div>
                     <div className="mt-3">
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">Restricted Countries</label>
-                      <input className="w-full px-3 py-2 rounded-lg border text-sm" placeholder="Russia, North Korea..." value={data.restrictedCountries} onChange={e => updateField('restrictedCountries', e.target.value)} />
+                      <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="campaign-restricted-countries">Restricted Countries</label>
+                      <input id="campaign-restricted-countries" className="w-full px-3 py-2 rounded-lg border text-sm" placeholder="Russia, North Korea..." value={data.restrictedCountries} onChange={e => updateField('restrictedCountries', e.target.value)} />
                     </div>
                 </RuleSection>
 
@@ -2586,7 +2717,7 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <label className="block text-xs font-semibold text-gray-700">Tag Orders</label>
+                        <label className="block text-xs font-semibold text-gray-700" htmlFor="campaign-order-tags">Tag Orders</label>
                         <div className="group relative flex items-center">
                           <Info size={12} className="text-gray-400 hover:text-indigo-600 cursor-help transition-colors" />
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none text-center">
@@ -2596,6 +2727,7 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                         </div>
                       </div>
                       <input 
+                        id="campaign-order-tags"
                         placeholder="e.g. summer-gift" 
                         className="w-full px-3 py-2 text-sm rounded-lg border" 
                         value={data.orderTags}
@@ -2604,7 +2736,7 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <label className="block text-xs font-semibold text-gray-700">Tag Customers</label>
+                        <label className="block text-xs font-semibold text-gray-700" htmlFor="campaign-customer-tags">Tag Customers</label>
                         <div className="group relative flex items-center">
                           <Info size={12} className="text-gray-400 hover:text-indigo-600 cursor-help transition-colors" />
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none text-center">
@@ -2614,6 +2746,7 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                         </div>
                       </div>
                       <input 
+                        id="campaign-customer-tags"
                         placeholder="e.g. influencer" 
                         className="w-full px-3 py-2 text-sm rounded-lg border" 
                         value={data.customerTags}
@@ -2621,8 +2754,9 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">Discount Code</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="campaign-discount-code">Discount Code</label>
                       <input 
+                        id="campaign-discount-code"
                         placeholder="INFLUENCER100" 
                         className="w-full px-3 py-2 text-sm rounded-lg border" 
                         value={data.discountCode}
@@ -2677,6 +2811,14 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
       </div>
     </div>
   );
+};
+
+CampaignBuilder.propTypes = {
+  onPublish: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  initialData: PropTypes.shape(campaignConfigShape),
+  merchantShop: PropTypes.string,
+  merchantId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 /* --- MAIN APP ORCHESTRATOR --- */
@@ -2881,6 +3023,10 @@ const PublicClaimLoader = ({ slug }) => {
       </div>
     </div>
   );
+};
+
+PublicClaimLoader.propTypes = {
+  slug: PropTypes.string.isRequired
 };
 
 
