@@ -14,6 +14,7 @@ export const loader = async ({ request }) => {
 
   const url = new URL(request.url);
   const shop = url.searchParams.get("shop");
+  const debugEnabled = url.searchParams.get("debug") === "1";
 
   const { admin, debug } = await getAdminClientResult({ request, shop });
   if (!admin) {
@@ -78,15 +79,23 @@ export const loader = async ({ request }) => {
       })
       .filter(Boolean);
 
-    return json({ products }, { headers: corsHeaders });
+    const payload = { products };
+    if (debugEnabled) {
+      payload.debug = {
+        auth: debug || null,
+        shopifyErrors: responseJson.errors || null,
+        edgesCount: edges.length,
+        productsCount: products.length,
+      };
+    }
+    return json(payload, { headers: corsHeaders });
   } catch (error) {
-    return json(
-      {
-        error: "Shopify request failed",
-        message: error?.message || "Unknown error",
-        details: error?.response?.errors || error?.errors || null,
-      },
-      { status: 400, headers: corsHeaders },
-    );
+    const payload = {
+      error: "Shopify request failed",
+      message: error?.message || "Unknown error",
+      details: error?.response?.errors || error?.errors || null,
+    };
+    if (debugEnabled) payload.debug = { auth: debug || null };
+    return json(payload, { status: 400, headers: corsHeaders });
   }
 };
