@@ -625,6 +625,28 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
     }
   };
 
+  const resolveVariantId = async (item) => {
+    if (!item) return null;
+    if (item.variantId) return item.variantId;
+    const shopDomain = campaign.shop || SHOPIFY_SHOP;
+    if (!GIFT_BRIDGE_URL || !shopDomain) return null;
+
+    try {
+      const response = await fetch(
+        `${GIFT_BRIDGE_URL}/api/products?shop=${encodeURIComponent(shopDomain)}`
+      );
+      if (!response.ok) return null;
+      const payload = await response.json().catch(() => ({}));
+      const match = (payload.products || []).find(
+        (product) => String(product.id) === String(item.id)
+      );
+      return match?.variantId || null;
+    } catch (err) {
+      console.error('Failed to resolve Shopify variant ID', err);
+      return null;
+    }
+  };
+
   const handleClaim = async () => {
     console.log('DEBUG: Calling Bridge at:', GIFT_BRIDGE_URL);
     if (isPreview) return;
@@ -724,7 +746,10 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
       }
       // 3. Format Address for Shopify (The Fix for 500 error)
       const primaryItem = selectedItems[0];
-      const gid = primaryItem?.variantId;
+      let gid = primaryItem?.variantId;
+      if (!gid && primaryItem?.id) {
+        gid = await resolveVariantId(primaryItem);
+      }
 
       if (gid) {
         // Map Google fields to Shopify's MailingAddressInput schema

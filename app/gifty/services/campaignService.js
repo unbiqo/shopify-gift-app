@@ -183,6 +183,7 @@ export const campaignService = {
 
     return (data || []).map((product) => ({
       id: product.product_gid || product.product_id || product.productId || product.gid || '',
+      variantId: product.variant_id || product.variantId || product.variant_gid || null,
       title: product.product_title || product.title || product.productTitle || 'Untitled product',
       imageUrl: product.product_image_url || product.image_url || product.imageUrl || product.original_source || '',
       status: product.product_status || product.status || '',
@@ -205,6 +206,7 @@ export const campaignService = {
     const payload = products.map((product) => ({
       campaign_id: campaignId,
       product_gid: product.id,
+      variant_id: product.variantId || product.variant_id || null,
       product_title: product.title,
       product_image_url: product.imageUrl || null,
       product_status: product.status || null,
@@ -212,7 +214,14 @@ export const campaignService = {
       inventory_quantity: product.inventoryQuantity ?? null
     }));
 
-    const basePayload = payload.map(({ campaign_id, product_gid, product_title, product_image_url }) => ({
+    const basePayload = payload.map(({ campaign_id, product_gid, product_title, product_image_url, variant_id }) => ({
+      campaign_id,
+      product_gid,
+      product_title,
+      product_image_url,
+      variant_id
+    }));
+    const minimalPayload = basePayload.map(({ campaign_id, product_gid, product_title, product_image_url }) => ({
       campaign_id,
       product_gid,
       product_title,
@@ -232,8 +241,16 @@ export const campaignService = {
       .insert(basePayload)
       .select();
 
-    if (fallbackError) throw fallbackError;
-    return fallbackData;
+    if (!fallbackError) return fallbackData;
+    if (fallbackError?.code !== 'PGRST204') throw fallbackError;
+
+    const { data: minimalData, error: minimalError } = await supabase
+      .from('campaign_products')
+      .insert(minimalPayload)
+      .select();
+
+    if (minimalError) throw minimalError;
+    return minimalData;
   },
 
   getProducts() {
