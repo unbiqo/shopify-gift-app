@@ -1,5 +1,5 @@
 import { data as json } from "react-router";
-import { getAdminClient } from "../lib/shopify-admin.server";
+import { getAdminClientResult } from "../lib/shopify-admin.server";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -49,16 +49,15 @@ export const action = async ({ request }) => {
     : null;
 
   // 2. Access Shopify WITHOUT a browser session (The "Bridge" power)
-  const admin = await getAdminClient({ request, shop });
+  const { admin, debug } = await getAdminClientResult({ request, shop });
   if (!admin) {
-    return json(
-      {
-        error: shop
-          ? "Missing Shopify access token for this shop."
-          : "Missing Shopify shop domain for this request.",
-      },
-      { status: shop ? 401 : 400, headers: corsHeaders }
-    );
+    const payload = {
+      error: shop
+        ? "Missing Shopify access token for this shop."
+        : "Missing Shopify shop domain for this request.",
+    };
+    if (debug) payload.debug = debug;
+    return json(payload, { status: shop ? 401 : 400, headers: corsHeaders });
   }
 
   try {

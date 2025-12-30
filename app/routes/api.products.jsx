@@ -1,5 +1,5 @@
 import { data as json } from "react-router";
-import { getAdminClient } from "../lib/shopify-admin.server";
+import { getAdminClientResult } from "../lib/shopify-admin.server";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,16 +15,15 @@ export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const shop = url.searchParams.get("shop");
 
-  const admin = await getAdminClient({ request, shop });
+  const { admin, debug } = await getAdminClientResult({ request, shop });
   if (!admin) {
-    return json(
-      {
-        error: shop
-          ? "Missing Shopify access token for this shop."
-          : "Missing shop query parameter.",
-      },
-      { status: shop ? 401 : 400, headers: corsHeaders },
-    );
+    const payload = {
+      error: shop
+        ? "Missing Shopify access token for this shop."
+        : "Missing shop query parameter.",
+    };
+    if (debug) payload.debug = debug;
+    return json(payload, { status: shop ? 401 : 400, headers: corsHeaders });
   }
 
   try {
