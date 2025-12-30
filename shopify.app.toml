@@ -2,7 +2,7 @@
 
 client_id = "15ae353b8f0f8255f3a643cb9515f77e"
 name = "Gifty - Influencer Gifting"
-application_url = "https://receiver-kitty-per-bargain.trycloudflare.com"
+application_url = "https://myseedform.vercel.app"
 embedded = true
 
 [build]
@@ -42,5 +42,5 @@ use_legacy_install_flow = false
 
 [auth]
 redirect_urls = [
-  "https://receiver-kitty-per-bargain.trycloudflare.com/auth"
+  "https://myseedform.vercel.app/auth"
 ]
