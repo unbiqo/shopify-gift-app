@@ -48,6 +48,7 @@
     "@shopify/api-codegen-preset": "^1.2.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@types/eslint": "^9.6.1",
+    "@vercel/react-router": "^1.2.4",
     "autoprefixer": "^10.4.22",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.32.0",
