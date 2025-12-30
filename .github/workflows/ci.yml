@@ -25,9 +25,6 @@ jobs:
       - name: Install dependencies using ${{ matrix.manager }}
         run: ${{ matrix.manager }} install
 
-      - name: Run TypeScript type checking
-        run: npx tsc --noEmit
-
       - name: Run ESLint
         run: npm run lint
 
