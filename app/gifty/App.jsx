@@ -703,12 +703,21 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
       const payload = await response.json().catch(() => null);
       if (!response.ok) {
         const message = payload?.message || payload?.error || 'Failed to create Shopify order.';
+        console.error('Bridge error response:', {
+          status: response.status,
+          message,
+          payload
+        });
         throw new Error(message);
       }
 
       return payload;
     } catch (err) {
-      console.error('❌ Fetch failed entirely:', err);
+      console.error('❌ Fetch failed entirely:', {
+        message: err?.message,
+        details: err?.details || err?.response?.errors || null,
+        error: err
+      });
       alert('Bridge Connection Failed. Check if your Shopify Terminal is running!');
       return null;
     }

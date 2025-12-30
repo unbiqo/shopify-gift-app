@@ -128,6 +128,7 @@ export const action = async ({ request }) => {
       [];
 
     if (userErrors.length) {
+      console.warn("Shopify userErrors", { shop, orderMode, userErrors });
       return json(
         {
           error: "Shopify request failed",
@@ -139,6 +140,11 @@ export const action = async ({ request }) => {
     }
 
     if (!data) {
+      console.error("Shopify response missing data", {
+        shop,
+        orderMode,
+        responseJson,
+      });
       return json(
         {
           error: "Shopify request failed",
@@ -158,6 +164,13 @@ export const action = async ({ request }) => {
       { headers: corsHeaders }
     );
   } catch (error) {
+    console.error("Shopify request failed", {
+      shop,
+      orderMode,
+      message: error?.message,
+      details: error?.response?.errors || error?.errors || null,
+      error,
+    });
     return json(
       {
         error: "Shopify request failed",
