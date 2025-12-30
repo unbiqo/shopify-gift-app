@@ -1,17 +1,44 @@
-import shopify, { authenticate, sessionStorage } from "../shopify.server";
+import { apiVersion, authenticate, sessionStorage } from "../shopify.server";
 import { getMerchantByShop } from "./merchant.server";
 
+const normalizeShopDomain = (value = "") =>
+  value.replace(/^https?:\/\//, "").split("/")[0].trim().toLowerCase();
+
+const resolveApiVersion = () =>
+  typeof apiVersion === "string" ? apiVersion : String(apiVersion);
+
 const buildAdminClient = (shop, accessToken) => {
-  const session = shopify.api.session.customAppSession(shop);
-  session.accessToken = accessToken;
-  return new shopify.api.clients.Graphql({ session });
+  if (!shop || !accessToken) return null;
+  const normalizedShop = normalizeShopDomain(shop);
+  const version = resolveApiVersion();
+  const endpoint = `https://${normalizedShop}/admin/api/${version}/graphql.json`;
+  return {
+    graphql: async (query, options = {}) => {
+      const payload = {
+        query: String(query),
+        variables: options?.variables || undefined,
+      };
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": accessToken,
+        ...(options?.headers || {}),
+      };
+      return fetch(endpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      });
+    },
+  };
 };
 
 const loadOfflineAdminClient = async (shop) => {
-  const offlineSessionId = shopify.api.session.getOfflineId(shop);
+  if (!sessionStorage?.loadSession) return null;
+  const normalizedShop = normalizeShopDomain(shop);
+  const offlineSessionId = `offline_${normalizedShop}`;
   const session = await sessionStorage.loadSession(offlineSessionId);
   if (!session?.accessToken) return null;
-  return new shopify.api.clients.Graphql({ session });
+  return buildAdminClient(shop, session.accessToken);
 };
 
 const isDebugRequested = (request) => {
@@ -63,8 +90,12 @@ export const getAdminClientResult = async ({ request, shop }) => {
       debug.supabase.merchantFound = Boolean(merchant);
       debug.supabase.hasToken = Boolean(merchant?.shopify_access_token);
       if (merchant?.shopify_access_token) {
+        const adminClient = buildAdminClient(shop, merchant.shopify_access_token);
+        if (!adminClient) {
+          debug.supabase.error = "Failed to build Shopify admin client.";
+        }
         return {
-          admin: buildAdminClient(shop, merchant.shopify_access_token),
+          admin: adminClient,
           debug: debugEnabled ? debug : null,
         };
       }
