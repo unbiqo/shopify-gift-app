@@ -1,6 +1,5 @@
 import { data as json } from "react-router";
-import shopify from "../shopify.server";
-import { getMerchantByShop } from "../lib/merchant.server";
+import { getAdminClient } from "../lib/shopify-admin.server";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -50,16 +49,17 @@ export const action = async ({ request }) => {
     : null;
 
   // 2. Access Shopify WITHOUT a browser session (The "Bridge" power)
-  const merchant = await getMerchantByShop(shop);
-  if (!merchant?.shopify_access_token) {
+  const admin = await getAdminClient({ request, shop });
+  if (!admin) {
     return json(
-      { error: "Missing Shopify access token for this shop." },
-      { status: 401, headers: corsHeaders }
+      {
+        error: shop
+          ? "Missing Shopify access token for this shop."
+          : "Missing Shopify shop domain for this request.",
+      },
+      { status: shop ? 401 : 400, headers: corsHeaders }
     );
   }
-  const session = shopify.api.session.customAppSession(shop);
-  session.accessToken = merchant.shopify_access_token;
-  const admin = new shopify.api.clients.Graphql({ session });
 
   try {
     const noteParts = ["Gifty Influencer Fulfillment"];
