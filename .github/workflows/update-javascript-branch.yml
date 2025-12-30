@@ -1,4 +1,4 @@
-name: Update JavaScript branch
+name: Update main workflow
 
 on:
   push:
