@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Suisse Intl", "Neue Haas Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@keyframes tooltip-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tooltip-fade {
+  position: absolute;
+  z-index: 50;
+  pointer-events: none;
+  animation: tooltip-fade 150ms ease-in forwards;
+}
