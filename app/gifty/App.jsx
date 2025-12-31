@@ -1293,7 +1293,7 @@ ClaimExperience.propTypes = {
   usage: PropTypes.shape(usageShape)
 };
 /* --- ORDERS DASHBOARD --- */
-const OrdersDashboard = ({ onNavigateDashboard }) => {
+const OrdersDashboard = ({ onNavigateDashboard, campaigns }) => {
   const [orders, setOrders] = useState([]);
   const [duplicateAttempts, setDuplicateAttempts] = useState([]);
   const [duplicateError, setDuplicateError] = useState(null);
@@ -1305,6 +1305,8 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
     status: 'all',
     consent: 'all'
   });
+  const defaultTimePeriod = 'year';
+  const [timePeriod, setTimePeriod] = useState(defaultTimePeriod);
   const [sortConfig, setSortConfig] = useState({
     key: 'date',
     direction: 'desc'
@@ -1331,19 +1333,24 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
   }), []);
 
   const campaignOptions = useMemo(() => {
-    const names = Array.from(new Set(orders.map(o => o.campaignName).filter(Boolean)));
+    const names = Array.from(new Set((campaigns || []).map((c) => c.name).filter(Boolean)));
     return names;
-  }, [orders]);
+  }, [campaigns]);
 
-  const statusOptions = useMemo(() => {
-    const statuses = Array.from(new Set(orders.map(o => o.status).filter(Boolean)));
-    return statuses;
-  }, [orders]);
+  const statusOptions = useMemo(() => Object.keys(STATUS_CONFIG), []);
 
-  const consentOptions = useMemo(() => {
-    const consents = Array.from(new Set(orders.map(o => buildConsentStatus(o))));
-    return consents;
-  }, [orders, buildConsentStatus]);
+  const consentOptions = useMemo(() => ([
+    { value: 'true', label: 'Consent Given' },
+    { value: 'false', label: 'No Consent' }
+  ]), []);
+
+  const timePeriodOptions = useMemo(() => ([
+    { value: 'day', label: 'Last 24 hours' },
+    { value: 'week', label: 'Last 7 days' },
+    { value: 'month', label: 'Last 30 days' },
+    { value: 'quarter', label: 'Last 90 days' },
+    { value: 'year', label: 'Last 12 months' }
+  ]), []);
 
   const fetchDuplicates = useCallback(async () => {
     setDuplicateError(null);
@@ -1356,12 +1363,34 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
     }
   }, []);
 
-  const fetchOrders = useCallback(async () => {
-    setRefreshing(true);
+  const buildOrdersQuery = useCallback(() => {
+    const params = new URLSearchParams();
+    if (filters.campaign !== 'all') params.set('campaign_name', filters.campaign);
+    if (filters.status !== 'all') params.set('status', filters.status);
+    if (filters.consent !== 'all') params.set('consent', filters.consent);
+    if (timePeriod) params.set('time_period', timePeriod);
+    params.set('sort_by', sortConfig.key);
+    params.set('sort_direction', sortConfig.direction);
+    return params.toString();
+  }, [filters, sortConfig, timePeriod]);
+
+  const fetchOrders = useCallback(async ({ reason } = {}) => {
+    if (reason === 'refresh') {
+      setRefreshing(true);
+    }
+    setLoading(true);
     setError(null);
     try {
-      const liveOrders = await orderService.listOrders({ limit: 100 });
-      setOrders(liveOrders);
+      const query = buildOrdersQuery();
+      const response = await fetchWithShopifyToken(`/api/orders?${query}`);
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const message = payload?.error || 'Unable to load orders right now. Please try again in a moment.';
+        setError(message);
+        setOrders([]);
+        return;
+      }
+      setOrders(Array.isArray(payload?.orders) ? payload.orders : []);
     } catch (err) {
       console.error('Unable to load orders from Supabase', err);
       setError('Unable to load orders right now. Please try again in a moment.');
@@ -1369,12 +1398,15 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [buildOrdersQuery]);
 
   useEffect(() => {
     fetchOrders();
+  }, [fetchOrders]);
+
+  useEffect(() => {
     fetchDuplicates();
-  }, [fetchOrders, fetchDuplicates]);
+  }, [fetchDuplicates]);
 
   const dashboardStats = useMemo(() => {
     return orders.reduce((acc, order) => {
@@ -1400,15 +1432,6 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
     };
   }, [fetchOrders]);
 
-  const filteredOrders = useMemo(() => {
-    return orders.filter(order => {
-      if (filters.campaign !== 'all' && order.campaignName !== filters.campaign) return false;
-      if (filters.status !== 'all' && order.status !== filters.status) return false;
-      if (filters.consent !== 'all' && buildConsentStatus(order) !== filters.consent) return false;
-      return true;
-    });
-  }, [orders, filters, buildConsentStatus]);
-
   const duplicateByCampaign = useMemo(() => {
     return duplicateAttempts.reduce((acc, attempt) => {
       const key = attempt.campaignName || attempt.campaignId || 'unknown';
@@ -1417,30 +1440,6 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
       return acc;
     }, {});
   }, [duplicateAttempts]);
-  const sortedOrders = useMemo(() => {
-    const data = [...filteredOrders];
-    const { key, direction } = sortConfig;
-    const multiplier = direction === 'asc' ? 1 : -1;
-
-    data.sort((a, b) => {
-      if (key === 'date') {
-        const dateA = new Date(a.createdAt).getTime();
-        const dateB = new Date(b.createdAt).getTime();
-        return (dateA - dateB) * multiplier;
-      }
-      if (key === 'status') {
-        return (a.status || '').localeCompare(b.status || '') * multiplier;
-      }
-      if (key === 'value') {
-        const valueA = Number(a.value) || 0;
-        const valueB = Number(b.value) || 0;
-        return (valueA - valueB) * multiplier;
-      }
-      return 0;
-    });
-
-    return data;
-  }, [filteredOrders, sortConfig]);
 
   const handleSort = (key) => {
     setSortConfig(prev => {
@@ -1531,7 +1530,7 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
   };
 
   const handleExportCSV = () => {
-    if (!sortedOrders.length) return;
+    if (!orders.length) return;
 
     const headers = [
       'Order ID',
@@ -1548,7 +1547,7 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
       'Consent'
     ];
 
-    const rows = sortedOrders.map((order) => {
+    const rows = orders.map((order) => {
       const orderId = formatCsvOrderId(order);
       const orderDate = ` ${formatCsvDate(order.createdAt)}`;
       const orderValue = typeof order.value === 'number'
@@ -1618,10 +1617,14 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
       );
     }
 
-    if (sortedOrders.length === 0) {
-      const emptyMessage = orders.length === 0
-        ? 'No orders yet. Share a claim link to see activity here.'
-        : 'No orders match the current filters.';
+    if (orders.length === 0) {
+      const isFiltered = filters.campaign !== 'all'
+        || filters.status !== 'all'
+        || filters.consent !== 'all'
+        || timePeriod !== defaultTimePeriod;
+      const emptyMessage = isFiltered
+        ? 'No orders match the current filters.'
+        : 'No orders yet. Share a claim link to see activity here.';
       return (
         <tr>
           <td className="px-6 py-10 text-center text-gray-500 text-sm" colSpan={7}>
@@ -1631,7 +1634,7 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
       );
     }
 
-    return sortedOrders.map((order) => {
+    return orders.map((order) => {
       const displayOrderId = formatDisplayOrderId(order);
       const displayDate = formatDate(order.createdAt);
       const thumbnailUrl = getOrderThumbnail(order);
@@ -1787,8 +1790,8 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
               <div className="flex flex-col items-end gap-1">
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={async () => { await fetchOrders(); await fetchDuplicates(); }}
-                    disabled={refreshing}
+                    onClick={async () => { await fetchOrders({ reason: 'refresh' }); await fetchDuplicates(); }}
+                    disabled={refreshing || loading}
                     className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                   >
                     {refreshing ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
@@ -1796,7 +1799,7 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
                   </button>
                   <button
                     onClick={handleExportCSV}
-                    disabled={!sortedOrders.length}
+                    disabled={!orders.length}
                     className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                   >
                     <Download size={16} />
@@ -1848,7 +1851,19 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
                   >
                     <option value="all">All Consent</option>
                     {consentOptions.map((consent) => (
-                      <option key={consent} value={consent}>{consent}</option>
+                      <option key={consent.value} value={consent.value}>{consent.label}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span className="text-xs uppercase tracking-wide text-gray-500">Time Period</span>
+                  <select
+                    value={timePeriod}
+                    onChange={(e) => setTimePeriod(e.target.value)}
+                    className="min-w-[160px] text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    {timePeriodOptions.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
                     ))}
                   </select>
                 </label>
@@ -1918,7 +1933,8 @@ const OrdersDashboard = ({ onNavigateDashboard }) => {
 };
 
 OrdersDashboard.propTypes = {
-  onNavigateDashboard: PropTypes.func.isRequired
+  onNavigateDashboard: PropTypes.func.isRequired,
+  campaigns: PropTypes.arrayOf(PropTypes.object)
 };
 
 /* --- CAMPAIGN DASHBOARD --- */
@@ -2378,7 +2394,7 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
   const [isSaving, setIsSaving] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [data, setData] = useState({
-    name: initialData?.name || 'Summer Influencer Seeding',
+    name: initialData?.name || 'My Influencer Seeding',
     slug: initialData?.slug || 'summer-seeding',
     welcomeMessage: initialData?.welcomeMessage || 'Hey! We love your content. Here is a gift on us.',
     selectedProductIds: initialData?.selectedProductIds || [],
@@ -2939,7 +2955,14 @@ export default function App() {
     );
   }
   
-  if (view === 'orders') return <OrdersDashboard onNavigateDashboard={() => setView('dashboard')} />;
+  if (view === 'orders') {
+    return (
+      <OrdersDashboard
+        campaigns={campaigns}
+        onNavigateDashboard={() => setView('dashboard')}
+      />
+    );
+  }
   if (view === 'settings') {
     return (
       <SettingsPage
