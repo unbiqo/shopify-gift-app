@@ -1,0 +1,608 @@
+{
+  "buildManifest": {
+    "serverBundles": {
+      "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0": {
+        "id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+        "file": "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    },
+    "routeIdToServerBundleId": {
+      "routes/webhooks.draft-order-deleted": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/webhooks.fulfillment-created": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/webhooks.app.scopes_update": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/webhooks.app.uninstalled": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/webhooks.order-cancelled": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/webhooks.order-created": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.register-webhooks": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.create-gift": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.sync-order": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.merchant": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.products": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.webhooks": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/claim.$slug": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.claims": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.orders": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/dashboard": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/resources": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/billing": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/privacy": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.$": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/app.campaigns.new": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/app.additional": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/app._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "app/root.jsx",
+        "path": "",
+        "config": {}
+      },
+      "routes/webhooks.draft-order-deleted": {
+        "id": "routes/webhooks.draft-order-deleted",
+        "parentId": "root",
+        "file": "app/routes/webhooks.draft-order-deleted.jsx",
+        "path": "webhooks/draft-order-deleted",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/webhooks.fulfillment-created": {
+        "id": "routes/webhooks.fulfillment-created",
+        "parentId": "root",
+        "file": "app/routes/webhooks.fulfillment-created.jsx",
+        "path": "webhooks/fulfillment-created",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/webhooks.app.scopes_update": {
+        "id": "routes/webhooks.app.scopes_update",
+        "parentId": "root",
+        "file": "app/routes/webhooks.app.scopes_update.jsx",
+        "path": "webhooks/app/scopes_update",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/webhooks.app.uninstalled": {
+        "id": "routes/webhooks.app.uninstalled",
+        "parentId": "root",
+        "file": "app/routes/webhooks.app.uninstalled.jsx",
+        "path": "webhooks/app/uninstalled",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/webhooks.order-cancelled": {
+        "id": "routes/webhooks.order-cancelled",
+        "parentId": "root",
+        "file": "app/routes/webhooks.order-cancelled.jsx",
+        "path": "webhooks/order-cancelled",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/webhooks.order-created": {
+        "id": "routes/webhooks.order-created",
+        "parentId": "root",
+        "file": "app/routes/webhooks.order-created.jsx",
+        "path": "webhooks/order-created",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.register-webhooks": {
+        "id": "routes/api.register-webhooks",
+        "parentId": "root",
+        "file": "app/routes/api.register-webhooks.jsx",
+        "path": "api/register-webhooks",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.create-gift": {
+        "id": "routes/api.create-gift",
+        "parentId": "root",
+        "file": "app/routes/api.create-gift.jsx",
+        "path": "api/create-gift",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.sync-order": {
+        "id": "routes/api.sync-order",
+        "parentId": "root",
+        "file": "app/routes/api.sync-order.jsx",
+        "path": "api/sync-order",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.merchant": {
+        "id": "routes/api.merchant",
+        "parentId": "root",
+        "file": "app/routes/api.merchant.jsx",
+        "path": "api/merchant",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.products": {
+        "id": "routes/api.products",
+        "parentId": "root",
+        "file": "app/routes/api.products.jsx",
+        "path": "api/products",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.webhooks": {
+        "id": "routes/api.webhooks",
+        "parentId": "root",
+        "file": "app/routes/api.webhooks.jsx",
+        "path": "api/webhooks",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/claim.$slug": {
+        "id": "routes/claim.$slug",
+        "parentId": "root",
+        "file": "app/routes/claim.$slug.jsx",
+        "path": "claim/:slug",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.claims": {
+        "id": "routes/api.claims",
+        "parentId": "root",
+        "file": "app/routes/api.claims.jsx",
+        "path": "api/claims",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.orders": {
+        "id": "routes/api.orders",
+        "parentId": "root",
+        "file": "app/routes/api.orders.jsx",
+        "path": "api/orders",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.login": {
+        "id": "routes/auth.login",
+        "parentId": "root",
+        "file": "app/routes/auth.login/route.jsx",
+        "path": "auth/login",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/dashboard": {
+        "id": "routes/dashboard",
+        "parentId": "root",
+        "file": "app/routes/dashboard.jsx",
+        "path": "dashboard",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/resources": {
+        "id": "routes/resources",
+        "parentId": "root",
+        "file": "app/routes/resources.jsx",
+        "path": "resources",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/billing": {
+        "id": "routes/billing",
+        "parentId": "root",
+        "file": "app/routes/billing.jsx",
+        "path": "billing",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/privacy": {
+        "id": "routes/privacy",
+        "parentId": "root",
+        "file": "app/routes/privacy.jsx",
+        "path": "privacy",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.$": {
+        "id": "routes/auth.$",
+        "parentId": "root",
+        "file": "app/routes/auth.$.jsx",
+        "path": "auth/*",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/_index": {
+        "id": "routes/_index",
+        "parentId": "root",
+        "file": "app/routes/_index/route.jsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/app": {
+        "id": "routes/app",
+        "parentId": "root",
+        "file": "app/routes/app.jsx",
+        "path": "app",
+        "config": {}
+      },
+      "routes/app.campaigns.new": {
+        "id": "routes/app.campaigns.new",
+        "parentId": "routes/app",
+        "file": "app/routes/app.campaigns.new.jsx",
+        "path": "campaigns/new",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/app.additional": {
+        "id": "routes/app.additional",
+        "parentId": "routes/app",
+        "file": "app/routes/app.additional.jsx",
+        "path": "additional",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/app._index": {
+        "id": "routes/app._index",
+        "parentId": "routes/app",
+        "file": "app/routes/app._index.jsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    }
+  },
+  "reactRouterConfig": {
+    "appDirectory": "C:/projects/shopify-gift-app/app",
+    "basename": "/",
+    "buildDirectory": "C:/projects/shopify-gift-app/build",
+    "future": {
+      "unstable_optimizeDeps": false,
+      "unstable_subResourceIntegrity": false,
+      "v8_middleware": false,
+      "v8_splitRouteModules": false,
+      "v8_viteEnvironmentApi": false
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "root.jsx",
+        "path": ""
+      },
+      "routes/webhooks.draft-order-deleted": {
+        "id": "routes/webhooks.draft-order-deleted",
+        "parentId": "root",
+        "file": "routes/webhooks.draft-order-deleted.jsx",
+        "path": "webhooks/draft-order-deleted"
+      },
+      "routes/webhooks.fulfillment-created": {
+        "id": "routes/webhooks.fulfillment-created",
+        "parentId": "root",
+        "file": "routes/webhooks.fulfillment-created.jsx",
+        "path": "webhooks/fulfillment-created"
+      },
+      "routes/webhooks.app.scopes_update": {
+        "id": "routes/webhooks.app.scopes_update",
+        "parentId": "root",
+        "file": "routes/webhooks.app.scopes_update.jsx",
+        "path": "webhooks/app/scopes_update"
+      },
+      "routes/webhooks.app.uninstalled": {
+        "id": "routes/webhooks.app.uninstalled",
+        "parentId": "root",
+        "file": "routes/webhooks.app.uninstalled.jsx",
+        "path": "webhooks/app/uninstalled"
+      },
+      "routes/webhooks.order-cancelled": {
+        "id": "routes/webhooks.order-cancelled",
+        "parentId": "root",
+        "file": "routes/webhooks.order-cancelled.jsx",
+        "path": "webhooks/order-cancelled"
+      },
+      "routes/webhooks.order-created": {
+        "id": "routes/webhooks.order-created",
+        "parentId": "root",
+        "file": "routes/webhooks.order-created.jsx",
+        "path": "webhooks/order-created"
+      },
+      "routes/api.register-webhooks": {
+        "id": "routes/api.register-webhooks",
+        "parentId": "root",
+        "file": "routes/api.register-webhooks.jsx",
+        "path": "api/register-webhooks"
+      },
+      "routes/api.create-gift": {
+        "id": "routes/api.create-gift",
+        "parentId": "root",
+        "file": "routes/api.create-gift.jsx",
+        "path": "api/create-gift"
+      },
+      "routes/api.sync-order": {
+        "id": "routes/api.sync-order",
+        "parentId": "root",
+        "file": "routes/api.sync-order.jsx",
+        "path": "api/sync-order"
+      },
+      "routes/api.merchant": {
+        "id": "routes/api.merchant",
+        "parentId": "root",
+        "file": "routes/api.merchant.jsx",
+        "path": "api/merchant"
+      },
+      "routes/api.products": {
+        "id": "routes/api.products",
+        "parentId": "root",
+        "file": "routes/api.products.jsx",
+        "path": "api/products"
+      },
+      "routes/api.webhooks": {
+        "id": "routes/api.webhooks",
+        "parentId": "root",
+        "file": "routes/api.webhooks.jsx",
+        "path": "api/webhooks"
+      },
+      "routes/claim.$slug": {
+        "id": "routes/claim.$slug",
+        "parentId": "root",
+        "file": "routes/claim.$slug.jsx",
+        "path": "claim/:slug"
+      },
+      "routes/api.claims": {
+        "id": "routes/api.claims",
+        "parentId": "root",
+        "file": "routes/api.claims.jsx",
+        "path": "api/claims"
+      },
+      "routes/api.orders": {
+        "id": "routes/api.orders",
+        "parentId": "root",
+        "file": "routes/api.orders.jsx",
+        "path": "api/orders"
+      },
+      "routes/auth.login": {
+        "id": "routes/auth.login",
+        "parentId": "root",
+        "file": "routes/auth.login/route.jsx",
+        "path": "auth/login"
+      },
+      "routes/dashboard": {
+        "id": "routes/dashboard",
+        "parentId": "root",
+        "file": "routes/dashboard.jsx",
+        "path": "dashboard"
+      },
+      "routes/resources": {
+        "id": "routes/resources",
+        "parentId": "root",
+        "file": "routes/resources.jsx",
+        "path": "resources"
+      },
+      "routes/billing": {
+        "id": "routes/billing",
+        "parentId": "root",
+        "file": "routes/billing.jsx",
+        "path": "billing"
+      },
+      "routes/privacy": {
+        "id": "routes/privacy",
+        "parentId": "root",
+        "file": "routes/privacy.jsx",
+        "path": "privacy"
+      },
+      "routes/auth.$": {
+        "id": "routes/auth.$",
+        "parentId": "root",
+        "file": "routes/auth.$.jsx",
+        "path": "auth/*"
+      },
+      "routes/_index": {
+        "id": "routes/_index",
+        "parentId": "root",
+        "file": "routes/_index/route.jsx",
+        "index": true
+      },
+      "routes/app": {
+        "id": "routes/app",
+        "parentId": "root",
+        "file": "routes/app.jsx",
+        "path": "app"
+      },
+      "routes/app.campaigns.new": {
+        "id": "routes/app.campaigns.new",
+        "parentId": "routes/app",
+        "file": "routes/app.campaigns.new.jsx",
+        "path": "campaigns/new"
+      },
+      "routes/app.additional": {
+        "id": "routes/app.additional",
+        "parentId": "routes/app",
+        "file": "routes/app.additional.jsx",
+        "path": "additional"
+      },
+      "routes/app._index": {
+        "id": "routes/app._index",
+        "parentId": "routes/app",
+        "file": "routes/app._index.jsx",
+        "index": true
+      }
+    },
+    "routeDiscovery": {
+      "mode": "lazy",
+      "manifestPath": "/__manifest"
+    },
+    "serverBuildFile": "index.js",
+    "serverModuleFormat": "esm",
+    "ssr": true,
+    "unstable_routeConfig": [
+      {
+        "id": "root",
+        "path": "",
+        "file": "root.jsx",
+        "children": [
+          {
+            "id": "routes/webhooks.draft-order-deleted",
+            "file": "routes/webhooks.draft-order-deleted.jsx",
+            "path": "webhooks/draft-order-deleted"
+          },
+          {
+            "id": "routes/webhooks.fulfillment-created",
+            "file": "routes/webhooks.fulfillment-created.jsx",
+            "path": "webhooks/fulfillment-created"
+          },
+          {
+            "id": "routes/webhooks.app.scopes_update",
+            "file": "routes/webhooks.app.scopes_update.jsx",
+            "path": "webhooks/app/scopes_update"
+          },
+          {
+            "id": "routes/webhooks.app.uninstalled",
+            "file": "routes/webhooks.app.uninstalled.jsx",
+            "path": "webhooks/app/uninstalled"
+          },
+          {
+            "id": "routes/webhooks.order-cancelled",
+            "file": "routes/webhooks.order-cancelled.jsx",
+            "path": "webhooks/order-cancelled"
+          },
+          {
+            "id": "routes/webhooks.order-created",
+            "file": "routes/webhooks.order-created.jsx",
+            "path": "webhooks/order-created"
+          },
+          {
+            "id": "routes/api.register-webhooks",
+            "file": "routes/api.register-webhooks.jsx",
+            "path": "api/register-webhooks"
+          },
+          {
+            "id": "routes/api.create-gift",
+            "file": "routes/api.create-gift.jsx",
+            "path": "api/create-gift"
+          },
+          {
+            "id": "routes/api.sync-order",
+            "file": "routes/api.sync-order.jsx",
+            "path": "api/sync-order"
+          },
+          {
+            "id": "routes/api.merchant",
+            "file": "routes/api.merchant.jsx",
+            "path": "api/merchant"
+          },
+          {
+            "id": "routes/api.products",
+            "file": "routes/api.products.jsx",
+            "path": "api/products"
+          },
+          {
+            "id": "routes/api.webhooks",
+            "file": "routes/api.webhooks.jsx",
+            "path": "api/webhooks"
+          },
+          {
+            "id": "routes/claim.$slug",
+            "file": "routes/claim.$slug.jsx",
+            "path": "claim/:slug"
+          },
+          {
+            "id": "routes/api.claims",
+            "file": "routes/api.claims.jsx",
+            "path": "api/claims"
+          },
+          {
+            "id": "routes/api.orders",
+            "file": "routes/api.orders.jsx",
+            "path": "api/orders"
+          },
+          {
+            "id": "routes/auth.login",
+            "file": "routes/auth.login/route.jsx",
+            "path": "auth/login"
+          },
+          {
+            "id": "routes/dashboard",
+            "file": "routes/dashboard.jsx",
+            "path": "dashboard"
+          },
+          {
+            "id": "routes/resources",
+            "file": "routes/resources.jsx",
+            "path": "resources"
+          },
+          {
+            "id": "routes/billing",
+            "file": "routes/billing.jsx",
+            "path": "billing"
+          },
+          {
+            "id": "routes/privacy",
+            "file": "routes/privacy.jsx",
+            "path": "privacy"
+          },
+          {
+            "id": "routes/auth.$",
+            "file": "routes/auth.$.jsx",
+            "path": "auth/*"
+          },
+          {
+            "id": "routes/_index",
+            "file": "routes/_index/route.jsx",
+            "index": true
+          },
+          {
+            "id": "routes/app",
+            "file": "routes/app.jsx",
+            "path": "app",
+            "children": [
+              {
+                "id": "routes/app.campaigns.new",
+                "file": "routes/app.campaigns.new.jsx",
+                "path": "campaigns/new"
+              },
+              {
+                "id": "routes/app.additional",
+                "file": "routes/app.additional.jsx",
+                "path": "additional"
+              },
+              {
+                "id": "routes/app._index",
+                "file": "routes/app._index.jsx",
+                "index": true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "viteConfig": {
+    "build": {
+      "assetsDir": "assets"
+    }
+  }
+}
