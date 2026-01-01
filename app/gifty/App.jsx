@@ -2478,26 +2478,30 @@ const CampaignBuilder = ({ onPublish, onCancel, initialData = null, merchantShop
 
   const handlePublish = async () => {
     setIsSaving(true);
-    
+    const isEditing = Boolean(initialData?.id);
+
     // 1. Generate a base slug from the CURRENT name
-    const baseSlug = data.name.toLowerCase().trim()
+    const baseSlug = (data.name || 'campaign').toLowerCase().trim()
       .replace(/[^\w\s-]/g, '') // Remove special chars
       .replace(/[\s_-]+/g, '-'); // Replace spaces with dashes
 
-    // 2. Append a random timestamp to GUARANTEE uniqueness
+    // 2. Append a random timestamp to GUARANTEE uniqueness (create only)
     // Example: "summer-seeding-1715629"
     const uniqueSlug = `${baseSlug}-${Date.now().toString().slice(-6)}`;
+    const resolvedSlug = isEditing
+      ? (data.slug || initialData?.slug || baseSlug)
+      : uniqueSlug;
     
     try {
-      // 3. Send the uniqueSlug instead of data.slug
-      const createdCampaign = await campaignService.createCampaign({
+      const savedCampaign = await campaignService.upsertCampaign({
         ...data,
-        slug: uniqueSlug,
+        id: initialData?.id || null,
+        slug: resolvedSlug,
         shop: merchantShop || data.shop || null,
         merchantId: merchantId || data.merchantId || null
       });
 
-      await campaignService.saveCampaignProducts(createdCampaign.id, selectedProducts);
+      await campaignService.saveCampaignProducts(savedCampaign.id, selectedProducts);
       
       onPublish(); 
     } catch (e) {

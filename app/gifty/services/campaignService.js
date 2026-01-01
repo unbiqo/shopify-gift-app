@@ -43,6 +43,13 @@ const buildConfigFromCampaignData = (campaignData = {}) => {
   };
 };
 
+const normalizeCampaignId = (value) => {
+  if (value == null) return null;
+  const trimmed = String(value).trim();
+  if (!trimmed || trimmed.toLowerCase() === 'null') return null;
+  return trimmed;
+};
+
 const mapCampaignConfig = (config = {}) => ({
   selectedProductIds: config.selectedProductIds || [],
   itemLimit: config.itemLimit || 1,
@@ -149,6 +156,39 @@ export const campaignService = {
     const { data, error } = await supabase
       .from('campaigns')
       .insert([payload])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * ADMIN BUILDER: Update an existing campaign or create a new one.
+   */
+  async upsertCampaign(campaignData) {
+    const campaignId = normalizeCampaignId(campaignData?.id);
+    const config = buildConfigFromCampaignData(campaignData);
+    const payload = {
+      name: campaignData.name,
+      slug: campaignData.slug,
+      welcome_message: campaignData.welcomeMessage,
+      brand_color: campaignData.brandColor,
+      shop: campaignData.shop || null,
+      merchant_id: campaignData.merchantId || null,
+      config,
+      selected_product_ids: campaignData.selectedProductIds || [],
+      status: 'active',
+    };
+
+    if (!campaignId) {
+      return this.createCampaign(campaignData);
+    }
+
+    const { data, error } = await supabase
+      .from('campaigns')
+      .update(payload)
+      .eq('id', campaignId)
       .select()
       .single();
 
