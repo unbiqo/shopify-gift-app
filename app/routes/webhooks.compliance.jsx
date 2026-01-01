@@ -1,5 +1,9 @@
 import { authenticate } from "../shopify.server";
 
+export const loader = async () => {
+  return new Response(null, { status: 200 });
+};
+
 export const action = async ({ request }) => {
   try {
     await authenticate.webhook(request);
