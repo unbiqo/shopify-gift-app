@@ -119,6 +119,7 @@ model orders {
   shopify_order_id     String?
   shopify_order_number String?
   influencer_email     String
+   influencer_phone     String?
   influencer_handle    String?
   influencer_name      String?
   items                Json
