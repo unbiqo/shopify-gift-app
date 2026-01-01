@@ -1,25 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { animate, motion } from "framer-motion";
 import { redirect, useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
 
-const heroVariants = {
-  control: {
-    headline: "Seedform turns influencer gifting into a repeatable growth engine.",
-    subhead:
-      "Launch campaigns in under 5 minutes with claim links, draft orders, and live tracking inside Shopify Admin. No spreadsheets, no shipping errors, no blind ROI.",
-    primaryCta: "Start free trial",
-    supporting: "Built for Shopify merchants and brand founders.",
-  },
-  punchy: {
-    headline: "Scale creator seeding without the spreadsheet chaos.",
-    subhead:
-      "Seedform automates claims, draft orders, and status updates in Shopify Admin so every gift ships fast and reports clean ROI.",
-    primaryCta: "Start free trial",
-    supporting: "Set up in minutes. No credit card required.",
-  },
-};
+const rotatingPhrases = [
+  "a repeatable growth engine",
+  "a 5-minute workflow",
+  "measurable, tracked ROI",
+];
+const longestPhrase = rotatingPhrases.reduce(
+  (longest, phrase) => (phrase.length > longest.length ? phrase : longest),
+  ""
+);
 
-const activeHeroKey = "control";
+const heroSubhead =
+  "Launch campaigns in under 5 minutes with claim links, draft orders, and live tracking inside Shopify Admin. No spreadsheets, no shipping errors, no blind ROI.";
 
 const featureCards = [
   {
@@ -67,6 +62,13 @@ const comparisonRows = [
   },
 ];
 
+const fadeIn = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: "easeOut" },
+  viewport: { once: true, amount: 0.3 },
+};
+
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const queryString = url.searchParams.toString();
@@ -93,13 +95,65 @@ export const loader = async ({ request }) => {
 
 export default function Index() {
   const { ctaHref } = useLoaderData();
-  const hero = heroVariants[activeHeroKey];
   const [influencers, setInfluencers] = useState(120);
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [typedText, setTypedText] = useState("");
+
+  useEffect(() => {
+    let isCancelled = false;
+    let typeControls;
+    let eraseControls;
+    const phrase = rotatingPhrases[phraseIndex];
+    const typeDuration = Math.max(phrase.length * 0.06, 0.6);
+    const eraseDuration = Math.max(phrase.length * 0.035, 0.35);
+
+    const runAnimation = async () => {
+      setTypedText("");
+      typeControls = animate(0, phrase.length, {
+        duration: typeDuration,
+        ease: "linear",
+        onUpdate: (latest) => {
+          if (!isCancelled) {
+            setTypedText(phrase.slice(0, Math.round(latest)));
+          }
+        },
+      });
+      await typeControls.finished;
+      if (isCancelled) return;
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      eraseControls = animate(phrase.length, 0, {
+        duration: eraseDuration,
+        ease: "linear",
+        onUpdate: (latest) => {
+          if (!isCancelled) {
+            setTypedText(phrase.slice(0, Math.round(latest)));
+          }
+        },
+      });
+      await eraseControls.finished;
+      if (isCancelled) return;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      setPhraseIndex((prev) => (prev + 1) % rotatingPhrases.length);
+    };
+
+    runAnimation();
+
+    return () => {
+      isCancelled = true;
+      typeControls?.stop();
+      eraseControls?.stop();
+    };
+  }, [phraseIndex]);
 
   const oldHours = 4 + influencers * 0.4;
   const seedformHours = 1 + influencers * 0.08;
   const savedHours = Math.max(oldHours - seedformHours, 0);
   const formatHours = (value) => value.toFixed(1);
+
+  const handleScrollToCalculator = () => {
+    if (typeof document === "undefined") return;
+    document.getElementById("calculator")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <div
@@ -132,49 +186,39 @@ export default function Index() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 pb-20 pt-12 md:px-8 lg:pt-16">
-        <section className="flex flex-col gap-10 lg:flex-row lg:items-center">
+      <main className="mx-auto max-w-6xl px-4 pb-20 pt-14 md:px-8 lg:pt-20">
+        <section className="flex flex-col gap-10 py-8 md:py-12 lg:flex-row lg:items-center lg:py-16">
           <div className="order-2 space-y-6 lg:order-1 lg:max-w-xl">
-            <p className="inline-flex w-fit items-center gap-2 border-4 border-ink bg-lime px-4 py-2 text-xs font-black uppercase tracking-[0.2em]">
-              Product-led growth for Shopify
-            </p>
             <h1 className="font-display text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
-              {hero.headline}
+              <span className="block">Seedform turns influencer gifting into...</span>
+              <span className="relative mt-4 block">
+                <span className="invisible block">{longestPhrase}</span>
+                <span className="absolute inset-0">
+                  <span>{typedText}</span>
+                  <motion.span
+                    aria-hidden="true"
+                    className="ml-1 inline-block h-[1em] w-[2px] align-middle bg-ink"
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
+                </span>
+              </span>
             </h1>
-            <p className="text-base font-medium md:text-lg">{hero.subhead}</p>
+            <p className="text-base font-medium md:text-lg">{heroSubhead}</p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
                 href={ctaHref}
                 className="inline-flex items-center justify-center border-4 border-ink bg-lime px-6 py-3 text-sm font-black uppercase tracking-wide shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] transition-transform hover:-translate-y-0.5"
               >
-                {hero.primaryCta}
+                Start free trial
               </a>
-              <a
-                href="#calculator"
+              <button
+                type="button"
+                onClick={handleScrollToCalculator}
                 className="inline-flex items-center justify-center border-4 border-ink bg-cream px-6 py-3 text-sm font-semibold shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] transition-transform hover:-translate-y-0.5"
               >
                 Calculate ROI speed
-              </a>
-            </div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/70">
-              {hero.supporting}
-            </p>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {[
-                { label: "Install time", value: "< 5 min" },
-                { label: "Draft orders", value: "Auto-built" },
-                { label: "Status sync", value: "Real-time" },
-              ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="border-4 border-ink bg-cream px-4 py-3 text-sm shadow-[4px_4px_0px_0px_rgba(8,8,8,1)]"
-                >
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
-                    {stat.label}
-                  </p>
-                  <p className="mt-2 text-lg font-black">{stat.value}</p>
-                </div>
-              ))}
+              </button>
             </div>
           </div>
 
@@ -214,7 +258,7 @@ export default function Index() {
 
         <section
           id="calculator"
-          className="mt-16 border-4 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] md:p-8"
+          className="mt-16 scroll-mt-[100px] border-4 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] md:p-8"
         >
           <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
             <div>
@@ -288,7 +332,7 @@ export default function Index() {
           </div>
         </section>
 
-        <section className="mt-16">
+        <motion.section className="mt-16" {...fadeIn}>
           <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
@@ -317,9 +361,12 @@ export default function Index() {
               </div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
-        <section className="mt-16 border-4 border-ink bg-cream shadow-[6px_6px_0px_0px_rgba(8,8,8,1)]">
+        <motion.section
+          className="mt-16 border-4 border-ink bg-cream shadow-[6px_6px_0px_0px_rgba(8,8,8,1)]"
+          {...fadeIn}
+        >
           <div className="border-b-4 border-ink px-6 py-6 md:px-8">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
               Seedform vs. the old way
@@ -360,7 +407,7 @@ export default function Index() {
               </tbody>
             </table>
           </div>
-        </section>
+        </motion.section>
 
         <section className="mt-16 border-4 border-ink bg-lime p-8 text-ink shadow-[6px_6px_0px_0px_rgba(8,8,8,1)]">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
@@ -380,12 +427,13 @@ export default function Index() {
               >
                 Start free trial
               </a>
-              <a
-                href="#calculator"
+              <button
+                type="button"
+                onClick={handleScrollToCalculator}
                 className="inline-flex items-center justify-center border-4 border-ink bg-ink px-6 py-3 text-sm font-black uppercase tracking-wide text-cream shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] transition-transform hover:-translate-y-0.5"
               >
                 Recalculate savings
-              </a>
+              </button>
             </div>
           </div>
         </section>
