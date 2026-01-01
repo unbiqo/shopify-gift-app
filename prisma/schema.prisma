@@ -118,12 +118,21 @@ model orders {
   campaign_id          String    @db.Uuid
   shopify_order_id     String?
   shopify_order_number String?
+  shopify_fulfillment_id String?
   influencer_email     String
   influencer_phone     String?
   influencer_handle    String?
+  influencer_handle_instagram String?
+  influencer_handle_tiktok    String?
+  influencer_tiktok    String?
   influencer_name      String?
   items                Json
   shipping_address     Json?
+  terms_consent_accepted Boolean?
+  terms_consent          Boolean?
+  marketing_opt_in_accepted Boolean?
+  marketing_opt_in          Boolean?
   status               String?   @default("pending")
   campaigns            campaigns @relation(fields: [campaign_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
+
