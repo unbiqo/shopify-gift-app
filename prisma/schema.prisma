@@ -1,34 +1,126 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
-// enough when changing adapters.
-// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Session {
-  id            String    @id
-  shop          String
-  state         String
-  isOnline      Boolean   @default(false)
-  scope         String?
-  expires       DateTime?
-  accessToken   String
-  userId        BigInt?
-  firstName     String?
-  lastName      String?
-  email         String?
-  accountOwner  Boolean   @default(false)
-  locale        String?
-  collaborator  Boolean?  @default(false)
-  emailVerified Boolean?  @default(false)
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires             DateTime? @db.Timestamptz(6)
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
   refreshToken        String?
-  refreshTokenExpires DateTime?
+  refreshTokenExpires DateTime? @db.Timestamptz(6)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model campaign_products {
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  campaign_id        String?    @db.Uuid
+  product_gid        String
+  product_title      String?
+  product_image_url  String?
+  created_at         DateTime?  @default(now()) @db.Timestamptz(6)
+  product_status     String?
+  available_for_sale Boolean?
+  inventory_quantity Int?
+  variant_id         String?
+  campaigns          campaigns? @relation(fields: [campaign_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model campaigns {
+  id                       String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_at               DateTime             @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
+  slug                     String               @unique
+  name                     String
+  brand_color              String?              @default("#000000")
+  welcome_message          String?
+  config                   Json                 @default("{}")
+  claims_count             Int?                 @default(0)
+  status                   String?              @default("active")
+  ask_custom_question      Boolean?             @default(false)
+  custom_question_label    String?
+  custom_question_required Boolean?             @default(false)
+  block_duplicate_orders   Boolean?             @default(false)
+  show_tiktok_field        Boolean?             @default(false)
+  show_instagram_field     Boolean?             @default(false)
+  show_phone_field         Boolean?             @default(false)
+  require_second_consent   Boolean?             @default(false)
+  second_consent_text      String?
+  email_opt_in             Boolean?             @default(true)
+  email_consent_text       String?
+  link_to_store            String?
+  link_text                String?
+  terms_consent_text       String?
+  show_consent_checkbox    Boolean?             @default(true)
+  restricted_countries     String?
+  shipping_zone            String?
+  max_cart_value           Decimal?             @db.Decimal
+  order_limit_per_link     Int?
+  item_limit               Int?                 @default(1)
+  selected_product_ids     Json?
+  submit_button_text       String?
+  shop                     String?
+  merchant_id              String?
+  campaign_products        campaign_products[]
+  duplicate_attempts       duplicate_attempts[]
+  orders                   orders[]
+
+  @@index([slug], map: "idx_campaigns_slug")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model duplicate_attempts {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_at      DateTime  @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
+  campaign_id     String    @db.Uuid
+  email           String
+  attempt_details Json?     @default("{}")
+  campaigns       campaigns @relation(fields: [campaign_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model merchants {
+  id                   String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  shop                 String    @unique
+  active_plan          String?   @default("Free")
+  total_claims_count   Int?      @default(0)
+  created_at           DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime? @default(now()) @db.Timestamptz(6)
+  is_trial_active      Boolean   @default(false)
+  plan_started_at      DateTime? @db.Timestamptz(6)
+  shopify_access_token String?
+  shopify_scope        String?
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model orders {
+  id                   String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_at           DateTime  @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
+  campaign_id          String    @db.Uuid
+  shopify_order_id     String?
+  shopify_order_number String?
+  influencer_email     String
+  influencer_handle    String?
+  influencer_name      String?
+  items                Json
+  shipping_address     Json?
+  status               String?   @default("pending")
+  campaigns            campaigns @relation(fields: [campaign_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
