@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --seed-ink: 17 17 17;
+  --seed-cream: 255 244 221;
+  --seed-lime: 220 243 107;
+  --seed-sky: 183 220 255;
+  --seed-coral: 255 179 154;
+  --seed-blush: 255 225 210;
+  --seed-sun: 255 210 94;
+}
+
 body {
   font-family: "Suisse Intl", "Neue Haas Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
