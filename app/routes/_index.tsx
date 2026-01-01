@@ -8,6 +8,7 @@ const rotatingPhrases = [
   "a 5-minute workflow",
   "measurable, tracked ROI",
 ];
+const accentColors = ["#CCFF00", "#FF9F1C", "#4CC9F0", "#F472B6"];
 const longestPhrase = rotatingPhrases.reduce(
   (longest, phrase) => (phrase.length > longest.length ? phrase : longest),
   ""
@@ -98,6 +99,7 @@ export default function Index() {
   const [influencers, setInfluencers] = useState(120);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
+  const accentColor = accentColors[phraseIndex % accentColors.length];
 
   useEffect(() => {
     let isCancelled = false;
@@ -190,14 +192,15 @@ export default function Index() {
         <section className="flex flex-col gap-10 py-8 md:py-12 lg:flex-row lg:items-center lg:py-16">
           <div className="order-2 space-y-6 lg:order-1 lg:max-w-xl">
             <h1 className="font-display text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
-              <span className="block">Seedform turns influencer gifting into...</span>
-              <span className="relative mt-4 block">
-                <span className="invisible block">{longestPhrase}</span>
-                <span className="absolute inset-0">
+              <span>Seedform turns influencer gifting into </span>
+              <span className="relative inline-block align-baseline">
+                <span className="invisible inline-block">{longestPhrase}</span>
+                <span className="absolute inset-0 whitespace-nowrap" style={{ color: accentColor }}>
                   <span>{typedText}</span>
                   <motion.span
                     aria-hidden="true"
-                    className="ml-1 inline-block h-[1em] w-[2px] align-middle bg-ink"
+                    className="ml-1 inline-block h-[1em] w-[2px] align-middle"
+                    style={{ backgroundColor: accentColor }}
                     animate={{ opacity: [0, 1, 0] }}
                     transition={{ duration: 1, repeat: Infinity }}
                   />
