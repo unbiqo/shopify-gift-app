@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "15ae353b8f0f8255f3a643cb9515f77e"
-name = "Gifty - Influencer Gifting"
+name = "Seedform - Influencer Gifting"
 application_url = "https://myseedform.vercel.app"
 embedded = true
 

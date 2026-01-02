@@ -1,5 +1,5 @@
-import GiftyApp from "../gifty/App.jsx";
+import SeedformApp from "../gifty/App.jsx";
 
 export default function ClaimRoute() {
-  return <GiftyApp />;
+  return <SeedformApp />;
 }

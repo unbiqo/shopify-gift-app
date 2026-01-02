@@ -5,7 +5,7 @@ export default function Resources() {
         <header>
           <h1 className="text-2xl font-bold">Resources</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Helpful links and guides for using Gifty.
+            Helpful links and guides for using Seedform.
           </p>
         </header>
 
@@ -30,7 +30,7 @@ export default function Resources() {
         <section className="space-y-3">
           <h2 className="text-lg font-semibold">Support</h2>
           <p className="text-sm text-gray-700">
-            Need help? Email support@gifty.app and we will respond within one
+            Need help? Email support@seedform.app and we will respond within one
             business day.
           </p>
         </section>

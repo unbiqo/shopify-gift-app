@@ -1,6 +1,6 @@
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
-import GiftyApp from "../gifty/App.jsx";
+import SeedformApp from "../gifty/App.jsx";
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
@@ -8,7 +8,7 @@ export const loader = async ({ request }) => {
 };
 
 export default function CampaignsNew() {
-  return <GiftyApp />;
+  return <SeedformApp />;
 }
 
 export const headers = (headersArgs) => {

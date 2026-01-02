@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
         <section className="space-y-3">
           <h2 className="text-lg font-semibold">Summary</h2>
           <p className="text-sm text-gray-700">
-            This policy explains what data Gifty collects, how it is used, and
+            This policy explains what data Seedform collects, how it is used, and
             how merchants and customers can request changes or deletion.
           </p>
         </section>
@@ -44,7 +44,7 @@ export default function PrivacyPolicy() {
         <section className="space-y-3">
           <h2 className="text-lg font-semibold">Contact</h2>
           <p className="text-sm text-gray-700">
-            For questions or data requests, email support@gifty.app.
+            For questions or data requests, email support@seedform.app.
           </p>
         </section>
       </div>

@@ -23,7 +23,7 @@ export default function Auth() {
           <s-text>
             {auto
               ? "Redirecting to Shopify..."
-              : "Open Gifty from your Shopify Admin or the App Store to connect your store."}
+              : "Open Seedform from your Shopify Admin or the App Store to connect your store."}
           </s-text>
           {errors?.shop && <s-text tone="critical">{errors.shop}</s-text>}
         </s-section>

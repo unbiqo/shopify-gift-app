@@ -61,7 +61,7 @@ export const action = async ({ request }) => {
   }
 
   try {
-    const noteParts = ["Gifty Influencer Fulfillment"];
+    const noteParts = ["Seedform Influencer Fulfillment"];
     if (influencerInfo?.name) noteParts.push(`Name: ${influencerInfo.name}`);
     if (influencerInfo?.handle) noteParts.push(`Handle: ${influencerInfo.handle}`);
     if (influencerInfo?.email) noteParts.push(`Email: ${influencerInfo.email}`);
@@ -86,7 +86,7 @@ export const action = async ({ request }) => {
                   note: noteParts.join(" | "),
                   lineItems: [{ variantId: variantId, quantity: 1 }],
                   shippingAddress: sanitizedShippingAddress,
-                  tags: ["Gifty-Influencer-Claim"],
+                  tags: ["Seedform-Influencer-Claim"],
                 },
               },
             }
@@ -106,7 +106,7 @@ export const action = async ({ request }) => {
                   note: noteParts.join(" | "),
                   lineItems: [{ variantId: variantId, quantity: 1 }],
                   shippingAddress: sanitizedShippingAddress,
-                  tags: ["Gifty-Influencer-Claim"],
+                  tags: ["Seedform-Influencer-Claim"],
                   appliedDiscount: {
                     title: "Influencer Gift",
                     value: 100,
