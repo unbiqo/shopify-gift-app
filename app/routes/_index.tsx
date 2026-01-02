@@ -269,10 +269,6 @@ export default function Index() {
             aria-hidden="true"
             className="seed-orange-surface pointer-events-none absolute -right-6 top-8 h-16 w-16"
           />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute left-6 top-28 h-10 w-20 border-2 border-solid seed-border"
-          />
           <div className="space-y-6 lg:pr-10">
             <div className="seed-surface seed-shadow-sm inline-flex w-fit items-center border-2 border-solid seed-border px-3 py-1 text-xs font-black uppercase tracking-[0.25em]">
               Influencer Gifting OS
@@ -281,7 +277,8 @@ export default function Index() {
               Stop Wasting 10+ Hours a Week on Manual Influencer Gifting.
             </h1>
             <p className="text-base font-medium leading-relaxed md:text-lg">
-              Seedform replaces your{" "}
+              Seedform replaces your manual gifting with a 5-minute automated
+              workflow that wipes out{" "}
               <span className="relative inline-flex align-baseline">
                 <span className="invisible" aria-hidden="true">
                   {longestPhrase}
@@ -298,8 +295,8 @@ export default function Index() {
                     transition={{ duration: 1, repeat: Infinity }}
                   />
                 </span>
-              </span>{" "}
-              with a 5-minute automated workflow.
+              </span>
+              .
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
@@ -315,14 +312,6 @@ export default function Index() {
               >
                 Calculate ROI
               </button>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-sm font-semibold">
-                Inside Shopify Admin.
-              </div>
-              <div className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-sm font-semibold">
-                5-minute setup.
-              </div>
             </div>
           </div>
 
@@ -355,9 +344,6 @@ export default function Index() {
               <div className="seed-surface border-t border-solid seed-border px-5 py-4 text-sm font-semibold">
                 Claims, draft orders, and live status sync in one silent minute.
               </div>
-            </div>
-            <div className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em]">
-              No audio. Pure workflow.
             </div>
           </div>
         </section>
