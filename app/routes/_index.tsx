@@ -108,6 +108,21 @@ const embeddedStyles = `
   background-color: var(--seed-cream);
 }
 
+.seed-grid-surface {
+  background-color: var(--seed-cream);
+  background-image: linear-gradient(
+      to right,
+      rgba(26, 26, 26, 0.12) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(26, 26, 26, 0.12) 1px,
+      transparent 1px
+    );
+  background-size: 72px 72px;
+}
+
 .seed-ink-surface {
   background-color: var(--seed-ink);
   color: var(--seed-cream);
@@ -213,6 +228,11 @@ export default function Index() {
     const phrase = rotatingPhrases[phraseIndex];
     const typeDuration = Math.max(phrase.length * 0.06, 0.6);
     const eraseDuration = Math.max(phrase.length * 0.035, 0.35);
+    const revealFromRight = (count) => {
+      const nextLength = Math.round(count);
+      const start = Math.max(phrase.length - nextLength, 0);
+      setTypedText(phrase.slice(start));
+    };
 
     const runAnimation = async () => {
       setTypedText("");
@@ -221,7 +241,7 @@ export default function Index() {
         ease: "linear",
         onUpdate: (latest) => {
           if (!isCancelled) {
-            setTypedText(phrase.slice(0, Math.round(latest)));
+            revealFromRight(latest);
           }
         },
       });
@@ -233,7 +253,7 @@ export default function Index() {
         ease: "linear",
         onUpdate: (latest) => {
           if (!isCancelled) {
-            setTypedText(phrase.slice(0, Math.round(latest)));
+            revealFromRight(latest);
           }
         },
       });
@@ -311,7 +331,13 @@ export default function Index() {
                 <span className="invisible" aria-hidden="true">
                   {longestPhrase}
                 </span>
-                <span className="absolute inset-0 whitespace-nowrap">
+                <motion.span
+                  key={phraseIndex}
+                  className="absolute inset-0 flex items-center justify-end whitespace-nowrap text-right"
+                  initial={{ x: 16, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.45, ease: "easeOut" }}
+                >
                   <span className="seed-orange-text font-semibold">
                     {typedText}
                   </span>
@@ -322,9 +348,8 @@ export default function Index() {
                     animate={{ opacity: [0, 1, 0] }}
                     transition={{ duration: 1, repeat: Infinity }}
                   />
-                </span>
+                </motion.span>
               </span>
-              .
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
@@ -506,7 +531,11 @@ export default function Index() {
               </h2>
             </div>
             <div className="border-b border-solid seed-border">
-              <div className="grid md:grid-cols-2">
+              <div className="grid md:grid-cols-[1.2fr_2fr_2fr]">
+                <div
+                  aria-hidden="true"
+                  className="seed-grid-surface hidden px-5 py-3 md:block md:border-r md:border-solid seed-border"
+                />
                 <div className="seed-orange-surface border-solid seed-border px-5 py-3 text-xs font-black uppercase tracking-[0.2em]">
                   Seedform - Modern Standard
                 </div>
@@ -519,12 +548,12 @@ export default function Index() {
               {hardTruthRows.map((row) => (
                 <div
                   key={row.label}
-                  className="grid gap-0 border-t border-solid seed-border first:border-t-0 md:grid-cols-[0.22fr_0.39fr_0.39fr]"
+                  className="grid gap-0 border-t border-solid seed-border first:border-t-0 md:grid-cols-[1.2fr_2fr_2fr]"
                 >
-                  <div className="seed-white-surface border-b border-solid seed-border px-5 py-4 text-xs font-black uppercase tracking-[0.2em] md:border-b-0 md:border-r">
+                  <div className="seed-grid-surface border-b border-solid seed-border px-5 py-4 text-xs font-black uppercase tracking-[0.2em] md:border-b-0 md:border-r">
                     {row.label}
                   </div>
-                  <div className="seed-orange-surface px-5 py-4">
+                  <div className="seed-surface seed-ink-text border-b border-solid seed-border px-5 py-4 md:border-b-0">
                     <div className="flex items-start gap-3 text-sm font-semibold">
                       <span className="seed-sf-icon mt-1" aria-hidden="true">
                         SF
