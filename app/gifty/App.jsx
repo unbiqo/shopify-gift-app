@@ -43,6 +43,15 @@ const fetchWithShopifyToken = async (input, init = {}) => {
   return fetch(input, { ...init, headers });
 };
 
+const resolveGiftBridgeUrl = () => {
+  if (GIFT_BRIDGE_URL) return GIFT_BRIDGE_URL.replace(/\/$/, '');
+  if (typeof window !== 'undefined') return window.location.origin;
+  if (typeof process !== 'undefined' && process.env?.SHOPIFY_APP_URL) {
+    return process.env.SHOPIFY_APP_URL.replace(/\/$/, '');
+  }
+  return '';
+};
+
 /**
  * ==========================================
  * SECTION 4: UI COMPONENTS & APP
@@ -664,10 +673,11 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
     "This brand's gifting limit has been reached. Please contact them directly.";
 
   const createGiftDraft = async ({ shop, email, shippingAddress, variantId, influencerInfo, orderId }) => {
-    console.log('🛠️ Attempting Bridge Call with:', { GIFT_BRIDGE_URL, variantId });
+    const bridgeBase = resolveGiftBridgeUrl();
+    console.log('Attempting Bridge Call with:', { bridgeBase, variantId });
 
-    if (!GIFT_BRIDGE_URL) {
-      alert('Error: VITE_GIFT_BRIDGE_URL is missing in .env.local');
+    if (!bridgeBase) {
+      setError('Gift bridge is not configured. Please try again later.');
       return null;
     }
     if (!shop) {
@@ -684,7 +694,7 @@ const ClaimExperience = ({ campaign, products, isPreview = false, onSubmit, usag
         ...shippingAddress,
         countryCode: shippingAddress?.countryCode || shippingAddress?.country || 'US'
       };
-      const response = await fetch(`${GIFT_BRIDGE_URL}/api/create-gift`, {
+      const response = await fetch(`${bridgeBase}/api/create-gift`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         mode: 'cors',
@@ -3015,7 +3025,7 @@ const PublicClaimLoader = ({ slug }) => {
           '';
         if (shopDomain) {
           try {
-            const baseUrl = env.VITE_GIFT_BRIDGE_URL || '';
+            const baseUrl = resolveGiftBridgeUrl();
             const productResponse = await fetch(
               `${baseUrl}/api/products?shop=${encodeURIComponent(shopDomain)}`
             );
