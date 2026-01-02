@@ -369,7 +369,7 @@ export default function Index() {
                 href={ctaHref}
                 className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-6 py-3 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
               >
-                Start Free Trial
+                Start Free
               </a>
               <button
                 type="button"
