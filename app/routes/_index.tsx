@@ -32,10 +32,32 @@ const featureCards = [
   },
 ];
 
-const hardTruth = {
-  old: ["Manual emails", "CSV cleanup", "Blind shipping"],
-  seedform: ["Automated claims", "Live status sync", "Tracked ROI"],
-};
+const hardTruthRows = [
+  {
+    label: "Logistics",
+    old: "Manual address collection via endless email threads and DM's.",
+    seedform:
+      "Automated claim links capture shipping data directly into Shopify.",
+  },
+  {
+    label: "Inventory",
+    old: "Overselling products because spreadsheets don't talk to your warehouse.",
+    seedform:
+      "Inventory-aware claims only allow influencers to pick what's in stock.",
+  },
+  {
+    label: "Order creation",
+    old: "Spending Sunday nights copy-pasting creator details into manual Draft Orders.",
+    seedform:
+      "Instant, error-free Draft Order generation the moment a gift is claimed.",
+  },
+  {
+    label: "Tracking",
+    old: "Checking carrier sites one-by-one to see if a creator's package arrived.",
+    seedform:
+      "Real-time shipment status synced directly to your campaign dashboard.",
+  },
+];
 
 const embeddedStyles = `
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
@@ -109,6 +131,20 @@ const embeddedStyles = `
 
 .seed-ink-text {
   color: var(--seed-ink);
+}
+
+.seed-sf-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 2px solid var(--seed-ink);
+  background-color: var(--seed-cream);
+  color: var(--seed-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .seed-video-frame {
@@ -493,47 +529,50 @@ export default function Index() {
                 The old way bleeds hours.
               </h2>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[520px] border-collapse text-left text-sm">
-                <thead>
-                  <tr>
-                    <th className="seed-surface seed-muted border-b border-r border-solid seed-border p-4 text-xs font-black uppercase tracking-[0.2em]">
-                      The Old Way
-                    </th>
-                    <th className="seed-orange-surface border-b border-solid seed-border p-4 text-xs font-black uppercase tracking-[0.2em]">
-                      Seedform
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="border-r border-solid seed-border p-4 align-top">
-                      <ul className="space-y-3 text-sm font-semibold">
-                        {hardTruth.old.map((item) => (
-                          <li key={item} className="flex items-start gap-3">
-                            <span className="seed-bullet mt-1" aria-hidden="true" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td className="p-4 align-top">
-                      <ul className="space-y-3 text-sm font-semibold">
-                        {hardTruth.seedform.map((item) => (
-                          <li key={item} className="flex items-start gap-3">
-                            <span
-                              className="seed-bullet-solid mt-1"
-                              aria-hidden="true"
-                            />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="border-b border-solid seed-border">
+              <div className="grid md:grid-cols-2">
+                <div className="seed-surface seed-muted border-b border-solid seed-border px-5 py-3 text-xs font-black uppercase tracking-[0.2em] md:border-b-0 md:border-r">
+                  The Old Way
+                </div>
+                <div className="seed-orange-surface border-solid seed-border px-5 py-3 text-xs font-black uppercase tracking-[0.2em]">
+                  Seedform
+                </div>
+              </div>
             </div>
+            <div className="border-t border-solid seed-border">
+              {hardTruthRows.map((row) => (
+                <div
+                  key={row.label}
+                  className="grid gap-0 border-t border-solid seed-border first:border-t-0 md:grid-cols-[0.22fr_0.39fr_0.39fr]"
+                >
+                  <div className="seed-surface seed-muted border-b border-solid seed-border px-5 py-4 text-xs font-black uppercase tracking-[0.2em] md:border-b-0 md:border-r">
+                    {row.label}
+                  </div>
+                  <div className="seed-surface border-b border-solid seed-border px-5 py-4 md:border-b-0 md:border-r">
+                    <div className="flex items-start gap-3 text-sm font-semibold">
+                      <span className="seed-bullet mt-1.5" aria-hidden="true" />
+                      <p>{row.old}</p>
+                    </div>
+                  </div>
+                  <div className="seed-orange-surface px-5 py-4">
+                    <div className="flex items-start gap-3 text-sm font-semibold">
+                      <span className="seed-sf-icon mt-1" aria-hidden="true">
+                        SF
+                      </span>
+                      <p>{row.seedform}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-8 flex">
+            <a
+              href={ctaHref}
+              className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-6 py-3 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
+            >
+              Start Free Trial
+            </a>
           </div>
         </motion.section>
       </main>
