@@ -193,7 +193,9 @@ const assembleSection = {
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const queryString = url.searchParams.toString();
-  const ctaHref = queryString ? `/auth/login?${queryString}` : "/auth/login";
+  const appStoreUrl = process.env.SHOPIFY_APP_STORE_URL || "";
+  const ctaHref =
+    appStoreUrl || (queryString ? `/auth/login?${queryString}` : "/auth/login");
   const isShopifyAdminContext =
     url.searchParams.has("host") ||
     url.searchParams.get("embedded") === "1" ||
