@@ -548,64 +548,71 @@ export default function Index() {
             </div>
             <div className="border-t border-solid seed-border">
               {/* Mobile: separate tables for clarity */}
-              <div className="md:hidden">
-                <div className="border-b border-solid seed-border">
-                  <div className="seed-orange-surface border-b border-solid seed-border px-5 py-3 text-xs font-black uppercase tracking-[0.2em]">
-                    Seedform - Modern Standard
-                  </div>
-                  {hardTruthRows.map((row) => (
-                    <div
-                      key={`seedform-${row.label}`}
-                      className="grid grid-cols-[1fr] border-t border-solid seed-border"
-                    >
-                      <div className="seed-grid-surface border-b border-solid seed-border px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em]">
-                        {row.label}
-                      </div>
-                      <div className="seed-surface seed-ink-text px-5 py-4">
-                        <div className="flex items-start gap-3 text-sm font-semibold">
-                          <span className="seed-sf-icon mt-1" aria-hidden="true">
-                            SF
-                          </span>
-                          <p>{row.seedform}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="md:hidden space-y-6 px-2">
+                {hardTruthRows.map((row) => (
+                  <div key={row.label} className="space-y-3">
+                    <p className="seed-ink-text text-xs font-black uppercase tracking-[0.2em]">
+                      {row.label}
+                    </p>
 
-                <div className="mt-6 border-t border-solid seed-border">
-                  <div className="seed-ink-text border-b border-solid seed-border px-5 py-3 text-xs font-black uppercase tracking-[0.2em]">
-                    The Old Way — Slow + Risky
-                  </div>
-                  <div className="bg-white">
-                    {hardTruthRows.map((row) => (
-                      <div
-                        key={`old-${row.label}`}
-                        className="border-b border-solid seed-border last:border-b-0"
-                      >
-                        <div className="seed-grid-surface px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em]">
-                          {row.label}
-                        </div>
-                        <div className="px-5 pb-4 pt-3">
-                          <div className="flex items-start gap-3 text-sm font-semibold">
-                            <span className="seed-bullet mt-1.5" aria-hidden="true" />
-                            <p>{row.old}</p>
-                          </div>
-                          <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] font-black uppercase tracking-[0.18em] seed-muted">
-                            <span className="inline-flex items-center gap-1">
-                              <span className="h-1.5 w-1.5 bg-red-500" aria-hidden="true" />
-                              Risk
-                            </span>
-                            <span className="inline-flex items-center gap-1">
-                              <span className="h-1.5 w-1.5 bg-yellow-400" aria-hidden="true" />
-                              Manual
-                            </span>
-                          </div>
+                    <motion.div
+                      className="seed-surface border border-solid seed-border px-5 py-4 shadow-sm"
+                      style={{ borderWidth: "1.5px" }}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                    >
+                      <div className="flex items-start gap-3 text-sm font-semibold">
+                        <span className="seed-bullet mt-1.5" aria-hidden="true" />
+                        <div>
+                          <p className="text-[11px] font-black uppercase tracking-[0.18em] seed-muted">
+                            The Old Way
+                          </p>
+                          <p className="mt-1 text-base">{row.old}</p>
                         </div>
                       </div>
-                    ))}
+                    </motion.div>
+
+                    <div className="flex justify-center">
+                      <svg
+                        aria-hidden="true"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#1A1A1A]"
+                      >
+                        <path d="M12 5v14m0 0-5-5m5 5 5-5" />
+                      </svg>
+                    </div>
+
+                    <motion.div
+                      className="seed-orange-surface border border-solid seed-border px-5 py-4 shadow-[4px_4px_0px_0px_rgba(26,26,26,1)]"
+                      style={{ borderWidth: "1.5px" }}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                    >
+                      <div className="flex items-start gap-3 text-sm font-semibold">
+                        <span className="seed-sf-icon mt-1" aria-hidden="true">
+                          SF
+                        </span>
+                        <div>
+                          <p className="text-[11px] font-black uppercase tracking-[0.18em]">
+                            Seedform
+                          </p>
+                          <p className="mt-1 text-base">{row.seedform}</p>
+                        </div>
+                      </div>
+                    </motion.div>
                   </div>
-                </div>
+                ))}
               </div>
 
               {/* Desktop grid stays unchanged */}
