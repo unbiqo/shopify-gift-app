@@ -126,6 +126,11 @@ const embeddedStyles = `
   color: var(--seed-ink);
 }
 
+.seed-white-surface {
+  background-color: #ffffff;
+  color: var(--seed-ink);
+}
+
 .seed-sf-icon {
   width: 1.2rem;
   height: 1.2rem;
@@ -301,7 +306,7 @@ export default function Index() {
               Stop Wasting Your Life on Manual Influencer Gifting.
             </h1>
             <p className="text-base font-medium leading-relaxed md:text-lg">
-              Seedform turns hours of manual work into...{" "}
+              Seedform turns hours of manual work into{" "}
               <span className="relative inline-flex align-baseline">
                 <span className="invisible" aria-hidden="true">
                   {longestPhrase}
@@ -342,7 +347,7 @@ export default function Index() {
             <div className="seed-video-frame seed-surface w-full max-w-3xl">
               <div className="seed-ink-surface relative aspect-video">
                 <div className="seed-surface seed-ink-text absolute left-4 top-4 border-2 border-solid seed-border px-3 py-1 text-xs font-black uppercase tracking-[0.2em]">
-                  1:00 Silent Demo Video
+                  1:00 Demo Video
                 </div>
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center">
                   <div className="seed-orange-surface seed-ink-text flex h-16 w-16 items-center justify-center rounded-full border-4 border-solid seed-border">
@@ -356,7 +361,7 @@ export default function Index() {
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm font-black uppercase tracking-[0.2em]">
-                      Silent demo placeholder
+                      Demo placeholder
                     </p>
                     <p className="seed-muted-light text-xs font-semibold">
                       Swap in your 60-second walkthrough.
@@ -365,7 +370,7 @@ export default function Index() {
                 </div>
               </div>
               <div className="seed-surface border-t border-solid seed-border px-5 py-4 text-sm font-semibold">
-                Claims, draft orders, and live status sync in one silent minute.
+                Claims, draft orders, and live status sync in one minute.
               </div>
             </div>
           </div>
@@ -502,11 +507,11 @@ export default function Index() {
             </div>
             <div className="border-b border-solid seed-border">
               <div className="grid md:grid-cols-2">
-                <div className="seed-surface seed-muted border-b border-solid seed-border px-5 py-3 text-xs font-black uppercase tracking-[0.2em] md:border-b-0 md:border-r">
-                  The Old Way
-                </div>
                 <div className="seed-orange-surface border-solid seed-border px-5 py-3 text-xs font-black uppercase tracking-[0.2em]">
                   Seedform - Modern Standard
+                </div>
+                <div className="seed-surface seed-muted border-b border-solid seed-border px-5 py-3 text-xs font-black uppercase tracking-[0.2em] md:border-b-0 md:border-l">
+                  The Old Way
                 </div>
               </div>
             </div>
@@ -516,14 +521,8 @@ export default function Index() {
                   key={row.label}
                   className="grid gap-0 border-t border-solid seed-border first:border-t-0 md:grid-cols-[0.22fr_0.39fr_0.39fr]"
                 >
-                  <div className="seed-surface seed-muted border-b border-solid seed-border px-5 py-4 text-xs font-black uppercase tracking-[0.2em] md:border-b-0 md:border-r">
+                  <div className="seed-white-surface border-b border-solid seed-border px-5 py-4 text-xs font-black uppercase tracking-[0.2em] md:border-b-0 md:border-r">
                     {row.label}
-                  </div>
-                  <div className="seed-surface border-b border-solid seed-border px-5 py-4 md:border-b-0 md:border-r">
-                    <div className="flex items-start gap-3 text-sm font-semibold">
-                      <span className="seed-bullet mt-1.5" aria-hidden="true" />
-                      <p>{row.old}</p>
-                    </div>
                   </div>
                   <div className="seed-orange-surface px-5 py-4">
                     <div className="flex items-start gap-3 text-sm font-semibold">
@@ -531,6 +530,12 @@ export default function Index() {
                         SF
                       </span>
                       <p>{row.seedform}</p>
+                    </div>
+                  </div>
+                  <div className="seed-surface border-b border-solid seed-border px-5 py-4 md:border-b-0 md:border-l">
+                    <div className="flex items-start gap-3 text-sm font-semibold">
+                      <span className="seed-bullet mt-1.5" aria-hidden="true" />
+                      <p>{row.old}</p>
                     </div>
                   </div>
                 </div>
