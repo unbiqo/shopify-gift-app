@@ -4,64 +4,133 @@ import { redirect, useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
 
 const rotatingPhrases = [
-  "a repeatable growth engine",
-  "a 5-minute workflow",
-  "measurable ROI",
+  "messy spreadsheets",
+  "endless email threads",
+  "shipping errors",
+  "blind ROI tracking",
 ];
-const accentColors = ["#FF4D00"];
+
 const longestPhrase = rotatingPhrases.reduce(
   (longest, phrase) => (phrase.length > longest.length ? phrase : longest),
   ""
 );
 
-const heroSubhead =
-  "Launch campaigns in under 5 minutes with claim links, draft orders, and live tracking inside Shopify Admin. No spreadsheets, no shipping errors, no blind ROI.";
-
 const featureCards = [
   {
-    title: "Native Shopify Power",
-    description: "Runs inside Shopify Admin so your team never leaves the dashboard.",
-    detail: "Launch, track, and optimize campaigns with Shopify-native context.",
+    title: "Work where you live",
+    description: "Runs entirely inside Shopify Admin. No new tabs to manage.",
   },
   {
-    title: "Zero-Error Claims",
-    description: "Inventory-aware claim links lock in accurate quantities.",
-    detail: "No overselling, no mismatched sizes, no manual fixes.",
+    title: "Zero-Error Gifting",
+    description:
+      "Influencers claim what's actually in stock. No more \"Sorry, we're out of that size\" emails.",
   },
   {
-    title: "Full-Cycle Tracking",
-    description: "Claims to conversion tracked in one live status board.",
-    detail: "See shipments, posts, and ROI without hunting for data.",
+    title: "Automatic Draft Orders",
+    description:
+      "Claims turn into shipping-ready orders instantly. No copy-pasting required.",
   },
 ];
 
-const comparisonRows = [
-  {
-    label: "Gift claims",
-    seedform: "Automated claim links with inventory checks.",
-    old: "Manual emails and creator follow-ups.",
-  },
-  {
-    label: "Order creation",
-    seedform: "Draft orders created instantly with correct data.",
-    old: "CSV uploads and copy-paste mistakes.",
-  },
-  {
-    label: "Shipping status",
-    seedform: "Live status synced to every creator.",
-    old: "No visibility until problems surface.",
-  },
-  {
-    label: "ROI tracking",
-    seedform: "Campaign-level performance in one dashboard.",
-    old: "Untracked links and scattered reports.",
-  },
-  {
-    label: "Launch speed",
-    seedform: "Campaigns live in under 5 minutes.",
-    old: "Hours of prep before anything ships.",
-  },
-];
+const hardTruth = {
+  old: ["Manual emails", "CSV cleanup", "Blind shipping"],
+  seedform: ["Automated claims", "Live status sync", "Tracked ROI"],
+};
+
+const embeddedStyles = `
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+.seed-root {
+  --seed-cream: #F5F2ED;
+  --seed-ink: #1A1A1A;
+  --seed-orange: #FF4D00;
+  --seed-line: rgba(26, 26, 26, 0.35);
+  color: var(--seed-ink);
+  background-color: var(--seed-cream);
+  font-family: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+  background-image: linear-gradient(
+      to right,
+      rgba(26, 26, 26, 0.12) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(26, 26, 26, 0.12) 1px,
+      transparent 1px
+    );
+  background-size: 72px 72px;
+}
+
+.seed-border {
+  border-color: var(--seed-ink);
+}
+
+.seed-border-muted {
+  border-color: var(--seed-line);
+}
+
+.seed-muted {
+  color: rgba(26, 26, 26, 0.7);
+}
+
+.seed-muted-light {
+  color: rgba(26, 26, 26, 0.55);
+}
+
+.seed-shadow {
+  box-shadow: 6px 6px 0 var(--seed-ink);
+}
+
+.seed-shadow-sm {
+  box-shadow: 4px 4px 0 var(--seed-ink);
+}
+
+.seed-shadow-lg {
+  box-shadow: 8px 8px 0 var(--seed-ink);
+}
+
+.seed-surface {
+  background-color: var(--seed-cream);
+}
+
+.seed-ink-surface {
+  background-color: var(--seed-ink);
+  color: var(--seed-cream);
+}
+
+.seed-orange-surface {
+  background-color: var(--seed-orange);
+  color: var(--seed-cream);
+}
+
+.seed-orange-text {
+  color: var(--seed-orange);
+}
+
+.seed-ink-text {
+  color: var(--seed-ink);
+}
+
+.seed-video-frame {
+  border: 4px solid var(--seed-orange);
+  box-shadow: 8px 8px 0 var(--seed-ink);
+}
+
+.seed-bullet {
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 2px solid var(--seed-ink);
+  display: inline-block;
+}
+
+.seed-bullet-solid {
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 2px solid var(--seed-ink);
+  background-color: var(--seed-orange);
+  display: inline-block;
+}
+`;
 
 const assembleSection = {
   hidden: { opacity: 0, y: 32 },
@@ -106,7 +175,7 @@ export default function Index() {
   const [influencers, setInfluencers] = useState(120);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
-  const accentColor = accentColors[phraseIndex % accentColors.length];
+  const accentColor = "var(--seed-orange)";
 
   useEffect(() => {
     let isCancelled = false;
@@ -163,63 +232,64 @@ export default function Index() {
     if (typeof window === "undefined") return;
     const target = document.getElementById("calculator");
     if (!target) return;
-    const rect = target.getBoundingClientRect();
-    const topOffset = 120;
-    const visibleHeight = Math.max(window.innerHeight - topOffset, 0);
-    const targetTop = window.scrollY + rect.top;
-    const scrollTop = Math.max(
-      targetTop + rect.height / 2 - topOffset - visibleHeight / 2,
-      0
-    );
-    window.scrollTo({ top: scrollTop, behavior: "smooth" });
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
-    <div
-      className="min-h-screen bg-cream font-sans text-ink antialiased"
-      style={{
-        "--seed-ink": "26 26 26",
-        "--seed-cream": "245 242 237",
-        "--seed-lime": "255 77 0",
-        backgroundImage:
-          "repeating-linear-gradient(135deg, rgba(26,26,26,0.06) 0, rgba(26,26,26,0.06) 1px, transparent 1px, transparent 28px), repeating-linear-gradient(0deg, rgba(26,26,26,0.08) 0, rgba(26,26,26,0.08) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(90deg, rgba(26,26,26,0.08) 0, rgba(26,26,26,0.08) 1px, transparent 1px, transparent 64px)",
-      }}
-    >
-      <header className="sticky top-0 z-40 border-b-4 border-ink bg-cream/95 backdrop-blur">
+    <div className="seed-root min-h-screen antialiased">
+      <style>{embeddedStyles}</style>
+      <header
+        className="sticky top-0 z-40 border-b border-solid seed-border-muted backdrop-blur"
+        style={{ backgroundColor: "rgba(245, 242, 237, 0.95)" }}
+      >
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center border-4 border-ink bg-lime text-sm font-black">
+            <div className="seed-orange-surface flex h-12 w-12 items-center justify-center border-4 border-solid seed-border text-sm font-black">
               SF
             </div>
             <div>
               <p className="text-lg font-black uppercase tracking-wide">Seedform</p>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/70">
+              <p className="seed-muted text-xs font-semibold uppercase tracking-[0.2em]">
                 Influencer gifting OS
               </p>
             </div>
           </div>
           <a
             href={ctaHref}
-            className="inline-flex items-center justify-center border-4 border-ink bg-lime px-5 py-2 text-sm font-black uppercase tracking-wide text-cream shadow-[6px_6px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
+            className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-5 py-2 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
           >
-            Start free trial
+            Start Free Trial
           </a>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 pb-20 pt-14 md:px-8 lg:pt-20">
-        <section className="relative z-0 flex min-h-[70vh] flex-col gap-10 overflow-hidden py-10 md:py-14 lg:min-h-[75vh] lg:flex-row lg:items-center lg:py-16">
+      <main className="mx-auto max-w-6xl border-l border-r border-solid seed-border-muted px-4 pb-20 pt-12 md:px-8 lg:pt-16">
+        <section className="relative grid gap-10 border-t border-solid seed-border-muted py-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-0 lg:py-16">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -right-24 top-6 -z-10 h-48 w-[80%] -skew-y-2 bg-ink/5"
+            className="seed-orange-surface pointer-events-none absolute -right-6 top-8 h-16 w-16"
           />
-          <div className="space-y-6 lg:max-w-xl">
-            <h1 className="font-sans text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
-              <span>Seedform turns influencer gifting into... </span>
-              <span className="relative inline-block align-baseline">
-                <span className="invisible inline-block">{longestPhrase}</span>
-                <span className="absolute inset-0 whitespace-nowrap" style={{ color: accentColor }}>
-                  <span>{typedText}</span>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-6 top-28 h-10 w-20 border-2 border-solid seed-border"
+          />
+          <div className="space-y-6 lg:pr-10">
+            <div className="seed-surface seed-shadow-sm inline-flex w-fit items-center border-2 border-solid seed-border px-3 py-1 text-xs font-black uppercase tracking-[0.25em]">
+              Influencer Gifting OS
+            </div>
+            <h1 className="text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
+              Stop Wasting 10+ Hours a Week on Manual Influencer Gifting.
+            </h1>
+            <p className="text-base font-medium leading-relaxed md:text-lg">
+              Seedform replaces your{" "}
+              <span className="relative inline-flex align-baseline">
+                <span className="invisible" aria-hidden="true">
+                  {longestPhrase}
+                </span>
+                <span className="absolute inset-0 whitespace-nowrap">
+                  <span className="seed-orange-text font-semibold">
+                    {typedText}
+                  </span>
                   <motion.span
                     aria-hidden="true"
                     className="ml-1 inline-block h-[1em] w-[2px] align-middle"
@@ -228,37 +298,42 @@ export default function Index() {
                     transition={{ duration: 1, repeat: Infinity }}
                   />
                 </span>
-              </span>
-            </h1>
-            <div className="inline-flex w-fit items-center border-2 border-ink bg-ink px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-cream shadow-[4px_4px_0px_0px_rgba(26,26,26,1)]">
-              Gifting OS for Shopify
-            </div>
-            <p className="text-base font-medium md:text-lg">{heroSubhead}</p>
+              </span>{" "}
+              with a 5-minute automated workflow.
+            </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
                 href={ctaHref}
-                className="inline-flex items-center justify-center border-4 border-ink bg-lime px-6 py-3 text-sm font-black uppercase tracking-wide text-cream shadow-[6px_6px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
+                className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-6 py-3 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
               >
-                Start free trial
+                Start Free Trial
               </a>
               <button
                 type="button"
                 onClick={handleScrollToCalculator}
-                className="inline-flex items-center justify-center border-2 border-ink bg-cream px-6 py-3 text-sm font-semibold shadow-[4px_4px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
+                className="seed-surface seed-shadow-sm inline-flex items-center justify-center border-2 border-solid seed-border px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-transform hover:-translate-y-0.5"
               >
                 Calculate ROI
               </button>
             </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-sm font-semibold">
+                Inside Shopify Admin.
+              </div>
+              <div className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-sm font-semibold">
+                5-minute setup.
+              </div>
+            </div>
           </div>
 
-          <div className="w-full lg:max-w-xl">
-            <div className="border-4 border-lime bg-cream shadow-[8px_8px_0px_0px_rgba(26,26,26,1)]">
-              <div className="relative aspect-video bg-ink text-cream">
-                <div className="absolute left-4 top-4 border-4 border-ink bg-cream px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-ink">
-                  1:00 silent demo
+          <div className="space-y-4 lg:border-l lg:border-solid seed-border-muted lg:pl-10">
+            <div className="seed-video-frame seed-surface">
+              <div className="seed-ink-surface relative aspect-video">
+                <div className="seed-surface seed-ink-text absolute left-4 top-4 border-2 border-solid seed-border px-3 py-1 text-xs font-black uppercase tracking-[0.2em]">
+                  1:00 Silent Demo Video
                 </div>
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-ink bg-lime text-ink">
+                  <div className="seed-orange-surface seed-ink-text flex h-16 w-16 items-center justify-center rounded-full border-4 border-solid seed-border">
                     <svg
                       aria-hidden="true"
                       viewBox="0 0 24 24"
@@ -269,43 +344,50 @@ export default function Index() {
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm font-black uppercase tracking-[0.2em]">
-                      Demo video placeholder
+                      Silent demo placeholder
                     </p>
-                    <p className="text-xs font-semibold text-cream/70">
-                      Replace with your silent 60s walkthrough.
+                    <p className="seed-muted-light text-xs font-semibold">
+                      Swap in your 60-second walkthrough.
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="border-t-4 border-ink bg-cream px-5 py-4 text-sm font-semibold">
-                Seedform campaign dashboard: claims, draft orders, and shipment status
-                in one view.
+              <div className="seed-surface border-t border-solid seed-border px-5 py-4 text-sm font-semibold">
+                Claims, draft orders, and live status sync in one silent minute.
               </div>
+            </div>
+            <div className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em]">
+              No audio. Pure workflow.
             </div>
           </div>
         </section>
 
         <motion.section
           id="calculator"
-          className="mt-16 scroll-mt-[120px] border-t border-ink/20 pt-16"
+          className="mt-16 scroll-mt-[120px] border-t border-solid seed-border-muted pt-16"
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
           variants={assembleSection}
         >
-          <div className="border-4 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_rgba(26,26,26,1)] md:p-8">
+          <div className="seed-surface seed-shadow border-4 border-solid seed-border p-6 md:p-8">
             <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
+                <p className="seed-muted text-xs font-black uppercase tracking-[0.2em]">
                   ROI speed calculator
                 </p>
-                <h2 className="font-sans text-3xl font-black md:text-4xl">
-                  Calculate your time saved
+                <h2 className="text-3xl font-black md:text-4xl">
+                  Calculate how much time you're throwing away.
                 </h2>
+                <p className="seed-muted mt-3 max-w-xl text-sm font-medium">
+                  Slide the count to see how many hours you claw back every month.
+                </p>
               </div>
-              <div className="border-2 border-ink bg-cream px-4 py-2 text-sm font-black uppercase tracking-[0.2em]">
+              <div className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-2 text-sm font-black uppercase tracking-[0.2em]">
                 Seedform saves you{" "}
-                <span className="text-lime">{formatHours(savedHours)} hours</span>{" "}
+                <span className="seed-orange-text">
+                  {formatHours(savedHours)} hours
+                </span>{" "}
                 per month
               </div>
             </div>
@@ -313,10 +395,13 @@ export default function Index() {
             <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="space-y-6">
                 <div className="flex items-center justify-between text-sm font-semibold">
-                  <label htmlFor="influencer-count" className="uppercase tracking-[0.2em]">
-                    Number of influencers
+                  <label
+                    htmlFor="influencer-count"
+                    className="uppercase tracking-[0.2em]"
+                  >
+                    Influencers
                   </label>
-                  <output className="border-4 border-ink bg-cream px-3 py-1 text-lg font-black">
+                  <output className="seed-surface border-4 border-solid seed-border px-3 py-1 text-lg font-black">
                     {influencers}
                   </output>
                 </div>
@@ -328,40 +413,40 @@ export default function Index() {
                   step="10"
                   value={influencers}
                   onChange={(event) => setInfluencers(Number(event.target.value))}
-                  className="h-3 w-full cursor-pointer accent-lime"
+                  className="h-3 w-full cursor-pointer"
+                  style={{ accentColor: "var(--seed-orange)" }}
                 />
-                <div className="flex justify-between text-xs font-semibold uppercase tracking-[0.2em] text-ink/60">
+                <div className="seed-muted flex justify-between text-xs font-semibold uppercase tracking-[0.2em]">
                   <span>10</span>
                   <span>250</span>
                   <span>500</span>
                 </div>
-                <p className="text-sm font-medium text-ink/70">
-                  Drag the slider to see how many manual hours disappear when Seedform
-                  automates claims, draft orders, and shipping updates.
+                <p className="seed-muted text-sm font-medium">
+                  Manual gifting scales linearly. Automation does not.
                 </p>
               </div>
 
               <div className="grid gap-4">
-                <div className="border-4 border-ink bg-cream p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
+                <div className="seed-surface border-4 border-solid seed-border p-4">
+                  <p className="seed-muted text-xs font-black uppercase tracking-[0.2em]">
                     The old way
                   </p>
                   <p className="mt-3 text-3xl font-black">
                     {formatHours(oldHours)} hrs
                   </p>
-                  <p className="text-sm font-semibold text-ink/70">
-                    Email threads, CSV cleanup, and manual follow-ups.
+                  <p className="seed-muted text-sm font-semibold">
+                    Manual emails, CSV cleanup, blind shipping.
                   </p>
                 </div>
-                <div className="border-4 border-ink bg-lime p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
+                <div className="seed-surface border-4 border-solid seed-border p-4">
+                  <p className="seed-muted text-xs font-black uppercase tracking-[0.2em]">
                     Seedform
                   </p>
-                  <p className="mt-3 text-3xl font-black">
+                  <p className="seed-orange-text mt-3 text-3xl font-black">
                     {formatHours(seedformHours)} hrs
                   </p>
-                  <p className="text-sm font-semibold text-ink/70">
-                    Automated claims, draft orders, and live status sync.
+                  <p className="seed-muted text-sm font-semibold">
+                    Automated claims, live status sync, tracked ROI.
                   </p>
                 </div>
               </div>
@@ -370,127 +455,98 @@ export default function Index() {
         </motion.section>
 
         <motion.section
-          className="mt-16 border-t border-ink/20 pt-16"
+          className="mt-16 border-t border-solid seed-border-muted pt-16"
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
           variants={assembleSection}
         >
-          <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
-                Simplified power
-              </p>
-              <h2 className="font-sans text-3xl font-black md:text-4xl">
-                The three blocks every gifting team needs
-              </h2>
-            </div>
-            <a
-              href={ctaHref}
-              className="inline-flex items-center justify-center border-4 border-ink bg-lime px-5 py-2 text-sm font-black uppercase tracking-wide text-cream shadow-[6px_6px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
-            >
-              Start free trial
-            </a>
+          <div>
+            <p className="seed-muted text-xs font-black uppercase tracking-[0.2em]">
+              Simple power
+            </p>
+            <h2 className="text-3xl font-black md:text-4xl">
+              Three blocks. Zero chaos.
+            </h2>
           </div>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {featureCards.map((card) => (
               <motion.div
                 key={card.title}
                 variants={assembleItem}
-                className="flex h-full flex-col gap-4 border-4 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_rgba(26,26,26,1)]"
+                className="seed-surface seed-shadow flex h-full flex-col gap-4 border-4 border-solid seed-border p-6"
               >
-                <h3 className="text-xl font-black">{card.title}</h3>
-                <p className="text-sm font-semibold">{card.description}</p>
-                <p className="text-sm font-medium text-ink/70">{card.detail}</p>
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-xl font-black">{card.title}</h3>
+                  <span
+                    aria-hidden="true"
+                    className="seed-orange-surface h-3 w-3 border-2 border-solid seed-border"
+                  />
+                </div>
+                <p className="text-sm font-semibold leading-relaxed">
+                  {card.description}
+                </p>
               </motion.div>
             ))}
           </div>
         </motion.section>
 
         <motion.section
-          className="mt-16 border-t border-ink/20 pt-16"
+          className="mt-16 border-t border-solid seed-border-muted pt-16"
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
           variants={assembleSection}
         >
-          <div className="border-4 border-ink bg-cream shadow-[6px_6px_0px_0px_rgba(26,26,26,1)]">
-            <div className="border-b border-ink px-6 py-6 md:px-8">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
-                Seedform vs. the old way
+          <div className="seed-surface seed-shadow border-4 border-solid seed-border">
+            <div className="border-b border-solid seed-border px-6 py-6 md:px-8">
+              <p className="seed-muted text-xs font-black uppercase tracking-[0.2em]">
+                Hard truth
               </p>
-              <h2 className="font-sans text-3xl font-black md:text-4xl">
-                High-contrast comparison
+              <h2 className="text-3xl font-black md:text-4xl">
+                The old way bleeds hours.
               </h2>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[680px] border-collapse text-left text-sm">
+              <table className="w-full min-w-[520px] border-collapse text-left text-sm">
                 <thead>
                   <tr>
-                    <th className="border-b border-ink border-r border-ink p-4 font-black uppercase tracking-wide">
-                      Workflow
+                    <th className="seed-surface seed-muted border-b border-r border-solid seed-border p-4 text-xs font-black uppercase tracking-[0.2em]">
+                      The Old Way
                     </th>
-                    <th className="border-b border-ink border-r border-ink bg-lime p-4 font-black uppercase tracking-wide">
+                    <th className="seed-orange-surface border-b border-solid seed-border p-4 text-xs font-black uppercase tracking-[0.2em]">
                       Seedform
-                    </th>
-                    <th className="border-b border-ink p-4 font-black uppercase tracking-wide">
-                      The old way
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {comparisonRows.map((row) => (
-                    <tr key={row.label}>
-                      <td className="border-b border-ink border-r border-ink p-4 font-semibold">
-                        {row.label}
-                      </td>
-                      <td className="border-b border-ink border-r border-ink bg-lime p-4 font-semibold">
-                        {row.seedform}
-                      </td>
-                      <td className="border-b border-ink p-4 font-semibold">
-                        {row.old}
-                      </td>
-                    </tr>
-                  ))}
+                  <tr>
+                    <td className="border-r border-solid seed-border p-4 align-top">
+                      <ul className="space-y-3 text-sm font-semibold">
+                        {hardTruth.old.map((item) => (
+                          <li key={item} className="flex items-start gap-3">
+                            <span className="seed-bullet mt-1" aria-hidden="true" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="p-4 align-top">
+                      <ul className="space-y-3 text-sm font-semibold">
+                        {hardTruth.seedform.map((item) => (
+                          <li key={item} className="flex items-start gap-3">
+                            <span
+                              className="seed-bullet-solid mt-1"
+                              aria-hidden="true"
+                            />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
-            </div>
-          </div>
-        </motion.section>
-
-        <motion.section
-          className="mt-16 border-t border-ink/20 pt-16"
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={assembleSection}
-        >
-          <div className="border-4 border-ink bg-cream p-8 text-ink shadow-[6px_6px_0px_0px_rgba(26,26,26,1)]">
-            <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-              <div>
-                <h2 className="font-sans text-3xl font-black md:text-4xl">
-                  Ready to make every gift measurable?
-                </h2>
-                <p className="mt-3 max-w-xl text-sm font-semibold text-ink/80">
-                  Install Seedform, launch your next campaign in minutes, and give
-                  your team a live view of every claim and shipment.
-                </p>
-              </div>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <a
-                  href={ctaHref}
-                  className="inline-flex items-center justify-center border-4 border-ink bg-lime px-6 py-3 text-sm font-black uppercase tracking-wide text-cream shadow-[6px_6px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
-                >
-                  Start free trial
-                </a>
-                <button
-                  type="button"
-                  onClick={handleScrollToCalculator}
-                  className="inline-flex items-center justify-center border-2 border-ink bg-cream px-6 py-3 text-sm font-black uppercase tracking-wide shadow-[4px_4px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
-                >
-                  Recalculate savings
-                </button>
-              </div>
             </div>
           </div>
         </motion.section>
