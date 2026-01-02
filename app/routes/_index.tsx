@@ -574,25 +574,37 @@ export default function Index() {
                 </div>
 
                 <div className="mt-6 border-t border-solid seed-border">
-                  <div className="seed-surface seed-muted border-b border-solid seed-border px-5 py-3 text-xs font-black uppercase tracking-[0.2em]">
-                    The Old Way
+                  <div className="seed-ink-text border-b border-solid seed-border px-5 py-3 text-xs font-black uppercase tracking-[0.2em]">
+                    The Old Way — Slow + Risky
                   </div>
-                  {hardTruthRows.map((row) => (
-                    <div
-                      key={`old-${row.label}`}
-                      className="grid grid-cols-[1fr] border-t border-solid seed-border"
-                    >
-                      <div className="seed-grid-surface border-b border-solid seed-border px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em]">
-                        {row.label}
-                      </div>
-                      <div className="seed-surface px-5 py-4">
-                        <div className="flex items-start gap-3 text-sm font-semibold">
-                          <span className="seed-bullet mt-1.5" aria-hidden="true" />
-                          <p>{row.old}</p>
+                  <div className="bg-white">
+                    {hardTruthRows.map((row) => (
+                      <div
+                        key={`old-${row.label}`}
+                        className="border-b border-solid seed-border last:border-b-0"
+                      >
+                        <div className="seed-grid-surface px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em]">
+                          {row.label}
+                        </div>
+                        <div className="px-5 pb-4 pt-3">
+                          <div className="flex items-start gap-3 text-sm font-semibold">
+                            <span className="seed-bullet mt-1.5" aria-hidden="true" />
+                            <p>{row.old}</p>
+                          </div>
+                          <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] font-black uppercase tracking-[0.18em] seed-muted">
+                            <span className="inline-flex items-center gap-1">
+                              <span className="h-1.5 w-1.5 bg-red-500" aria-hidden="true" />
+                              Risk
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                              <span className="h-1.5 w-1.5 bg-yellow-400" aria-hidden="true" />
+                              Manual
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
 
