@@ -228,10 +228,9 @@ export default function Index() {
     const phrase = rotatingPhrases[phraseIndex];
     const typeDuration = Math.max(phrase.length * 0.06, 0.6);
     const eraseDuration = Math.max(phrase.length * 0.035, 0.35);
-    const revealFromRight = (count) => {
+    const revealFromLeft = (count) => {
       const nextLength = Math.round(count);
-      const start = Math.max(phrase.length - nextLength, 0);
-      setTypedText(phrase.slice(start));
+      setTypedText(phrase.slice(0, nextLength));
     };
 
     const runAnimation = async () => {
@@ -241,7 +240,7 @@ export default function Index() {
         ease: "linear",
         onUpdate: (latest) => {
           if (!isCancelled) {
-            revealFromRight(latest);
+            revealFromLeft(latest);
           }
         },
       });
@@ -253,7 +252,7 @@ export default function Index() {
         ease: "linear",
         onUpdate: (latest) => {
           if (!isCancelled) {
-            revealFromRight(latest);
+            revealFromLeft(latest);
           }
         },
       });
@@ -333,7 +332,7 @@ export default function Index() {
                 </span>
                 <motion.span
                   key={phraseIndex}
-                  className="absolute inset-0 flex items-center justify-end whitespace-nowrap text-right"
+                  className="absolute inset-0 flex items-center justify-start whitespace-nowrap text-left"
                   initial={{ x: 16, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.45, ease: "easeOut" }}
@@ -343,7 +342,7 @@ export default function Index() {
                   </span>
                   <motion.span
                     aria-hidden="true"
-                    className="ml-1 inline-block h-[1em] w-[2px] align-middle"
+                    className="ml-0.5 inline-block h-[1em] w-[2px] align-middle"
                     style={{ backgroundColor: accentColor }}
                     animate={{ opacity: [0, 1, 0] }}
                     transition={{ duration: 1, repeat: Infinity }}
