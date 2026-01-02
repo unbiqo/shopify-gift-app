@@ -194,6 +194,17 @@ export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const queryString = url.searchParams.toString();
   const ctaHref = queryString ? `/auth/login?${queryString}` : "/auth/login";
+  const isShopifyAdminContext =
+    url.searchParams.has("host") ||
+    url.searchParams.get("embedded") === "1" ||
+    url.searchParams.has("shop");
+
+  // If this request is coming from Shopify Admin (embedded), bypass the marketing page
+  // and send the user into the embedded app flow.
+  if (isShopifyAdminContext) {
+    const targetSearch = queryString ? `?${queryString}` : "";
+    return redirect(`/app${targetSearch}`);
+  }
 
   try {
     const { sessionToken } = await authenticate.public.checkout(request);
