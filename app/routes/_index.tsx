@@ -6,9 +6,9 @@ import { authenticate } from "../shopify.server";
 const rotatingPhrases = [
   "a repeatable growth engine",
   "a 5-minute workflow",
-  "measurable, tracked ROI",
+  "measurable ROI",
 ];
-const accentColors = ["#CCFF00", "#FF9F1C", "#4CC9F0", "#F472B6"];
+const accentColors = ["#FF4D00"];
 const longestPhrase = rotatingPhrases.reduce(
   (longest, phrase) => (phrase.length > longest.length ? phrase : longest),
   ""
@@ -63,11 +63,18 @@ const comparisonRows = [
   },
 ];
 
-const fadeIn = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: "easeOut" },
-  viewport: { once: true, amount: 0.3 },
+const assembleSection = {
+  hidden: { opacity: 0, y: 32 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: "easeOut", staggerChildren: 0.12 },
+  },
+};
+
+const assembleItem = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
 export const loader = async ({ request }) => {
@@ -153,17 +160,29 @@ export default function Index() {
   const formatHours = (value) => value.toFixed(1);
 
   const handleScrollToCalculator = () => {
-    if (typeof document === "undefined") return;
-    document.getElementById("calculator")?.scrollIntoView({ behavior: "smooth" });
+    if (typeof window === "undefined") return;
+    const target = document.getElementById("calculator");
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    const topOffset = 120;
+    const visibleHeight = Math.max(window.innerHeight - topOffset, 0);
+    const targetTop = window.scrollY + rect.top;
+    const scrollTop = Math.max(
+      targetTop + rect.height / 2 - topOffset - visibleHeight / 2,
+      0
+    );
+    window.scrollTo({ top: scrollTop, behavior: "smooth" });
   };
 
   return (
     <div
-      className="min-h-screen bg-cream font-sans text-ink"
+      className="min-h-screen bg-cream font-sans text-ink antialiased"
       style={{
-        "--seed-ink": "8 8 8",
-        "--seed-cream": "249 249 249",
-        "--seed-lime": "204 255 0",
+        "--seed-ink": "26 26 26",
+        "--seed-cream": "245 242 237",
+        "--seed-lime": "255 77 0",
+        backgroundImage:
+          "repeating-linear-gradient(135deg, rgba(26,26,26,0.06) 0, rgba(26,26,26,0.06) 1px, transparent 1px, transparent 28px), repeating-linear-gradient(0deg, rgba(26,26,26,0.08) 0, rgba(26,26,26,0.08) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(90deg, rgba(26,26,26,0.08) 0, rgba(26,26,26,0.08) 1px, transparent 1px, transparent 64px)",
       }}
     >
       <header className="sticky top-0 z-40 border-b-4 border-ink bg-cream/95 backdrop-blur">
@@ -181,7 +200,7 @@ export default function Index() {
           </div>
           <a
             href={ctaHref}
-            className="inline-flex items-center justify-center border-4 border-ink bg-lime px-5 py-2 text-sm font-black uppercase tracking-wide shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] transition-transform hover:-translate-y-0.5"
+            className="inline-flex items-center justify-center border-4 border-ink bg-lime px-5 py-2 text-sm font-black uppercase tracking-wide text-cream shadow-[6px_6px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
           >
             Start free trial
           </a>
@@ -189,10 +208,14 @@ export default function Index() {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 pb-20 pt-14 md:px-8 lg:pt-20">
-        <section className="flex flex-col gap-10 py-8 md:py-12 lg:flex-row lg:items-center lg:py-16">
-          <div className="order-2 space-y-6 lg:order-1 lg:max-w-xl">
-            <h1 className="font-display text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
-              <span>Seedform turns influencer gifting into </span>
+        <section className="relative z-0 flex min-h-[70vh] flex-col gap-10 overflow-hidden py-10 md:py-14 lg:min-h-[75vh] lg:flex-row lg:items-center lg:py-16">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-24 top-6 -z-10 h-48 w-[80%] -skew-y-2 bg-ink/5"
+          />
+          <div className="space-y-6 lg:max-w-xl">
+            <h1 className="font-sans text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
+              <span>Seedform turns influencer gifting into... </span>
               <span className="relative inline-block align-baseline">
                 <span className="invisible inline-block">{longestPhrase}</span>
                 <span className="absolute inset-0 whitespace-nowrap" style={{ color: accentColor }}>
@@ -207,26 +230,29 @@ export default function Index() {
                 </span>
               </span>
             </h1>
+            <div className="inline-flex w-fit items-center border-2 border-ink bg-ink px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-cream shadow-[4px_4px_0px_0px_rgba(26,26,26,1)]">
+              Gifting OS for Shopify
+            </div>
             <p className="text-base font-medium md:text-lg">{heroSubhead}</p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
                 href={ctaHref}
-                className="inline-flex items-center justify-center border-4 border-ink bg-lime px-6 py-3 text-sm font-black uppercase tracking-wide shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] transition-transform hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center border-4 border-ink bg-lime px-6 py-3 text-sm font-black uppercase tracking-wide text-cream shadow-[6px_6px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
               >
                 Start free trial
               </a>
               <button
                 type="button"
                 onClick={handleScrollToCalculator}
-                className="inline-flex items-center justify-center border-4 border-ink bg-cream px-6 py-3 text-sm font-semibold shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] transition-transform hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center border-2 border-ink bg-cream px-6 py-3 text-sm font-semibold shadow-[4px_4px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
               >
-                Calculate ROI speed
+                Calculate ROI
               </button>
             </div>
           </div>
 
-          <div className="order-1 w-full lg:order-2 lg:max-w-xl">
-            <div className="border-4 border-ink bg-cream shadow-[8px_8px_0px_0px_rgba(8,8,8,1)]">
+          <div className="w-full lg:max-w-xl">
+            <div className="border-4 border-lime bg-cream shadow-[8px_8px_0px_0px_rgba(26,26,26,1)]">
               <div className="relative aspect-video bg-ink text-cream">
                 <div className="absolute left-4 top-4 border-4 border-ink bg-cream px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-ink">
                   1:00 silent demo
@@ -259,187 +285,215 @@ export default function Index() {
           </div>
         </section>
 
-        <section
+        <motion.section
           id="calculator"
-          className="mt-16 scroll-mt-[100px] border-4 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] md:p-8"
+          className="mt-16 scroll-mt-[120px] border-t border-ink/20 pt-16"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={assembleSection}
         >
-          <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
-                ROI speed calculator
-              </p>
-              <h2 className="font-display text-3xl font-black md:text-4xl">
-                Calculate your time saved
-              </h2>
+          <div className="border-4 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_rgba(26,26,26,1)] md:p-8">
+            <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
+                  ROI speed calculator
+                </p>
+                <h2 className="font-sans text-3xl font-black md:text-4xl">
+                  Calculate your time saved
+                </h2>
+              </div>
+              <div className="border-2 border-ink bg-cream px-4 py-2 text-sm font-black uppercase tracking-[0.2em]">
+                Seedform saves you{" "}
+                <span className="text-lime">{formatHours(savedHours)} hours</span>{" "}
+                per month
+              </div>
             </div>
-            <div className="border-4 border-ink bg-lime px-4 py-2 text-sm font-black uppercase tracking-[0.2em]">
-              Seedform saves you {formatHours(savedHours)} hours per month
+
+            <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between text-sm font-semibold">
+                  <label htmlFor="influencer-count" className="uppercase tracking-[0.2em]">
+                    Number of influencers
+                  </label>
+                  <output className="border-4 border-ink bg-cream px-3 py-1 text-lg font-black">
+                    {influencers}
+                  </output>
+                </div>
+                <input
+                  id="influencer-count"
+                  type="range"
+                  min="10"
+                  max="500"
+                  step="10"
+                  value={influencers}
+                  onChange={(event) => setInfluencers(Number(event.target.value))}
+                  className="h-3 w-full cursor-pointer accent-lime"
+                />
+                <div className="flex justify-between text-xs font-semibold uppercase tracking-[0.2em] text-ink/60">
+                  <span>10</span>
+                  <span>250</span>
+                  <span>500</span>
+                </div>
+                <p className="text-sm font-medium text-ink/70">
+                  Drag the slider to see how many manual hours disappear when Seedform
+                  automates claims, draft orders, and shipping updates.
+                </p>
+              </div>
+
+              <div className="grid gap-4">
+                <div className="border-4 border-ink bg-cream p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
+                    The old way
+                  </p>
+                  <p className="mt-3 text-3xl font-black">
+                    {formatHours(oldHours)} hrs
+                  </p>
+                  <p className="text-sm font-semibold text-ink/70">
+                    Email threads, CSV cleanup, and manual follow-ups.
+                  </p>
+                </div>
+                <div className="border-4 border-ink bg-lime p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
+                    Seedform
+                  </p>
+                  <p className="mt-3 text-3xl font-black">
+                    {formatHours(seedformHours)} hrs
+                  </p>
+                  <p className="text-sm font-semibold text-ink/70">
+                    Automated claims, draft orders, and live status sync.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+        </motion.section>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between text-sm font-semibold">
-                <label htmlFor="influencer-count" className="uppercase tracking-[0.2em]">
-                  Number of influencers
-                </label>
-                <output className="border-4 border-ink bg-cream px-3 py-1 text-lg font-black">
-                  {influencers}
-                </output>
-              </div>
-              <input
-                id="influencer-count"
-                type="range"
-                min="10"
-                max="500"
-                step="10"
-                value={influencers}
-                onChange={(event) => setInfluencers(Number(event.target.value))}
-                className="h-3 w-full cursor-pointer accent-lime"
-              />
-              <div className="flex justify-between text-xs font-semibold uppercase tracking-[0.2em] text-ink/60">
-                <span>10</span>
-                <span>250</span>
-                <span>500</span>
-              </div>
-              <p className="text-sm font-medium text-ink/70">
-                Drag the slider to see how many manual hours disappear when Seedform
-                automates claims, draft orders, and shipping updates.
-              </p>
-            </div>
-
-            <div className="grid gap-4">
-              <div className="border-4 border-ink bg-cream p-4">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
-                  The old way
-                </p>
-                <p className="mt-3 text-3xl font-black">
-                  {formatHours(oldHours)} hrs
-                </p>
-                <p className="text-sm font-semibold text-ink/70">
-                  Email threads, CSV cleanup, and manual follow-ups.
-                </p>
-              </div>
-              <div className="border-4 border-ink bg-lime p-4">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
-                  Seedform
-                </p>
-                <p className="mt-3 text-3xl font-black">
-                  {formatHours(seedformHours)} hrs
-                </p>
-                <p className="text-sm font-semibold text-ink/70">
-                  Automated claims, draft orders, and live status sync.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <motion.section className="mt-16" {...fadeIn}>
+        <motion.section
+          className="mt-16 border-t border-ink/20 pt-16"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={assembleSection}
+        >
           <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
                 Simplified power
               </p>
-              <h2 className="font-display text-3xl font-black md:text-4xl">
+              <h2 className="font-sans text-3xl font-black md:text-4xl">
                 The three blocks every gifting team needs
               </h2>
             </div>
             <a
               href={ctaHref}
-              className="inline-flex items-center justify-center border-4 border-ink bg-lime px-5 py-2 text-sm font-black uppercase tracking-wide shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] transition-transform hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center border-4 border-ink bg-lime px-5 py-2 text-sm font-black uppercase tracking-wide text-cream shadow-[6px_6px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
             >
               Start free trial
             </a>
           </div>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {featureCards.map((card) => (
-              <div
+              <motion.div
                 key={card.title}
-                className="flex h-full flex-col gap-4 border-4 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_rgba(8,8,8,1)]"
+                variants={assembleItem}
+                className="flex h-full flex-col gap-4 border-4 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_rgba(26,26,26,1)]"
               >
                 <h3 className="text-xl font-black">{card.title}</h3>
                 <p className="text-sm font-semibold">{card.description}</p>
                 <p className="text-sm font-medium text-ink/70">{card.detail}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.section>
 
         <motion.section
-          className="mt-16 border-4 border-ink bg-cream shadow-[6px_6px_0px_0px_rgba(8,8,8,1)]"
-          {...fadeIn}
+          className="mt-16 border-t border-ink/20 pt-16"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={assembleSection}
         >
-          <div className="border-b-4 border-ink px-6 py-6 md:px-8">
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
-              Seedform vs. the old way
-            </p>
-            <h2 className="font-display text-3xl font-black md:text-4xl">
-              High-contrast comparison
-            </h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[680px] border-collapse text-left text-sm">
-              <thead>
-                <tr>
-                  <th className="border-b-4 border-ink border-r-4 p-4 font-black uppercase tracking-wide">
-                    Workflow
-                  </th>
-                  <th className="border-b-4 border-ink border-r-4 bg-lime p-4 font-black uppercase tracking-wide">
-                    Seedform
-                  </th>
-                  <th className="border-b-4 border-ink p-4 font-black uppercase tracking-wide">
-                    The old way
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {comparisonRows.map((row) => (
-                  <tr key={row.label}>
-                    <td className="border-b-4 border-ink border-r-4 p-4 font-semibold">
-                      {row.label}
-                    </td>
-                    <td className="border-b-4 border-ink border-r-4 bg-lime p-4 font-semibold">
-                      {row.seedform}
-                    </td>
-                    <td className="border-b-4 border-ink p-4 font-semibold">
-                      {row.old}
-                    </td>
+          <div className="border-4 border-ink bg-cream shadow-[6px_6px_0px_0px_rgba(26,26,26,1)]">
+            <div className="border-b border-ink px-6 py-6 md:px-8">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-ink/70">
+                Seedform vs. the old way
+              </p>
+              <h2 className="font-sans text-3xl font-black md:text-4xl">
+                High-contrast comparison
+              </h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[680px] border-collapse text-left text-sm">
+                <thead>
+                  <tr>
+                    <th className="border-b border-ink border-r border-ink p-4 font-black uppercase tracking-wide">
+                      Workflow
+                    </th>
+                    <th className="border-b border-ink border-r border-ink bg-lime p-4 font-black uppercase tracking-wide">
+                      Seedform
+                    </th>
+                    <th className="border-b border-ink p-4 font-black uppercase tracking-wide">
+                      The old way
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {comparisonRows.map((row) => (
+                    <tr key={row.label}>
+                      <td className="border-b border-ink border-r border-ink p-4 font-semibold">
+                        {row.label}
+                      </td>
+                      <td className="border-b border-ink border-r border-ink bg-lime p-4 font-semibold">
+                        {row.seedform}
+                      </td>
+                      <td className="border-b border-ink p-4 font-semibold">
+                        {row.old}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </motion.section>
 
-        <section className="mt-16 border-4 border-ink bg-lime p-8 text-ink shadow-[6px_6px_0px_0px_rgba(8,8,8,1)]">
-          <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-            <div>
-              <h2 className="font-display text-3xl font-black md:text-4xl">
-                Ready to make every gift measurable?
-              </h2>
-              <p className="mt-3 max-w-xl text-sm font-semibold text-ink/80">
-                Install Seedform, launch your next campaign in minutes, and give your
-                team a live view of every claim and shipment.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <a
-                href={ctaHref}
-                className="inline-flex items-center justify-center border-4 border-ink bg-cream px-6 py-3 text-sm font-black uppercase tracking-wide shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] transition-transform hover:-translate-y-0.5"
-              >
-                Start free trial
-              </a>
-              <button
-                type="button"
-                onClick={handleScrollToCalculator}
-                className="inline-flex items-center justify-center border-4 border-ink bg-ink px-6 py-3 text-sm font-black uppercase tracking-wide text-cream shadow-[6px_6px_0px_0px_rgba(8,8,8,1)] transition-transform hover:-translate-y-0.5"
-              >
-                Recalculate savings
-              </button>
+        <motion.section
+          className="mt-16 border-t border-ink/20 pt-16"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={assembleSection}
+        >
+          <div className="border-4 border-ink bg-cream p-8 text-ink shadow-[6px_6px_0px_0px_rgba(26,26,26,1)]">
+            <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+              <div>
+                <h2 className="font-sans text-3xl font-black md:text-4xl">
+                  Ready to make every gift measurable?
+                </h2>
+                <p className="mt-3 max-w-xl text-sm font-semibold text-ink/80">
+                  Install Seedform, launch your next campaign in minutes, and give
+                  your team a live view of every claim and shipment.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <a
+                  href={ctaHref}
+                  className="inline-flex items-center justify-center border-4 border-ink bg-lime px-6 py-3 text-sm font-black uppercase tracking-wide text-cream shadow-[6px_6px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
+                >
+                  Start free trial
+                </a>
+                <button
+                  type="button"
+                  onClick={handleScrollToCalculator}
+                  className="inline-flex items-center justify-center border-2 border-ink bg-cream px-6 py-3 text-sm font-black uppercase tracking-wide shadow-[4px_4px_0px_0px_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
+                >
+                  Recalculate savings
+                </button>
+              </div>
             </div>
           </div>
-        </section>
+        </motion.section>
       </main>
     </div>
   );
