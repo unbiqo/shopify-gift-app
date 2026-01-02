@@ -18,44 +18,38 @@ const longestPhrase = rotatingPhrases.reduce(
 const featureCards = [
   {
     title: "Work where you live",
-    description: "Runs entirely inside Shopify Admin. No new tabs to manage.",
+    description: "Runs inside Shopify Admin so the work stays in one place.",
   },
   {
     title: "Zero-Error Gifting",
-    description:
-      "Influencers claim what's actually in stock. No more \"Sorry, we're out of that size\" emails.",
+    description: "Claims only allow what is in stock. No back-and-forth fixes.",
   },
   {
     title: "Automatic Draft Orders",
-    description:
-      "Claims turn into shipping-ready orders instantly. No copy-pasting required.",
+    description: "Draft Orders generate instantly the moment a gift is claimed.",
   },
 ];
 
 const hardTruthRows = [
   {
     label: "Logistics",
-    old: "Manual address collection via endless email threads and DM's.",
-    seedform:
-      "Automated claim links capture shipping data directly into Shopify.",
+    old: "Manual address collection in DMs.",
+    seedform: "Automated claim links in Shopify.",
   },
   {
     label: "Inventory",
-    old: "Overselling products because spreadsheets don't talk to your warehouse.",
-    seedform:
-      "Inventory-aware claims only allow influencers to pick what's in stock.",
+    old: "Overselling products via spreadsheets.",
+    seedform: "Inventory-aware claim checks.",
   },
   {
     label: "Order creation",
-    old: "Spending Sunday nights copy-pasting creator details into manual Draft Orders.",
-    seedform:
-      "Instant, error-free Draft Order generation the moment a gift is claimed.",
+    old: "Manual Sunday night copy-pasting.",
+    seedform: "Instant Draft Order generation.",
   },
   {
     label: "Tracking",
-    old: "Checking carrier sites one-by-one to see if a creator's package arrived.",
-    seedform:
-      "Real-time shipment status synced directly to your campaign dashboard.",
+    old: "Hunting carrier sites one-by-one.",
+    seedform: "Live shipment sync to dashboard.",
   },
 ];
 
@@ -385,6 +379,43 @@ export default function Index() {
         </section>
 
         <motion.section
+          className="mt-16 border-t border-solid seed-border-muted pt-16"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={assembleSection}
+        >
+          <div>
+            <p className="seed-muted text-xs font-black uppercase tracking-[0.2em]">
+              Simple power
+            </p>
+            <h2 className="text-3xl font-black md:text-4xl">
+              Three blocks. Zero chaos.
+            </h2>
+          </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {featureCards.map((card) => (
+              <motion.div
+                key={card.title}
+                variants={assembleItem}
+                className="seed-surface seed-shadow flex h-full flex-col gap-4 border-4 border-solid seed-border p-6"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-xl font-black">{card.title}</h3>
+                  <span
+                    aria-hidden="true"
+                    className="seed-orange-surface h-3 w-3 border-2 border-solid seed-border"
+                  />
+                </div>
+                <p className="text-sm font-semibold leading-relaxed">
+                  {card.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        <motion.section
           id="calculator"
           className="mt-16 scroll-mt-[120px] border-t border-solid seed-border-muted pt-16"
           initial="hidden"
@@ -473,43 +504,6 @@ export default function Index() {
                 </div>
               </div>
             </div>
-          </div>
-        </motion.section>
-
-        <motion.section
-          className="mt-16 border-t border-solid seed-border-muted pt-16"
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={assembleSection}
-        >
-          <div>
-            <p className="seed-muted text-xs font-black uppercase tracking-[0.2em]">
-              Simple power
-            </p>
-            <h2 className="text-3xl font-black md:text-4xl">
-              Three blocks. Zero chaos.
-            </h2>
-          </div>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {featureCards.map((card) => (
-              <motion.div
-                key={card.title}
-                variants={assembleItem}
-                className="seed-surface seed-shadow flex h-full flex-col gap-4 border-4 border-solid seed-border p-6"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-xl font-black">{card.title}</h3>
-                  <span
-                    aria-hidden="true"
-                    className="seed-orange-surface h-3 w-3 border-2 border-solid seed-border"
-                  />
-                </div>
-                <p className="text-sm font-semibold leading-relaxed">
-                  {card.description}
-                </p>
-              </motion.div>
-            ))}
           </div>
         </motion.section>
 
