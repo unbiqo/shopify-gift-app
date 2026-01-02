@@ -220,6 +220,7 @@ export default function Index() {
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
   const accentColor = "var(--seed-orange)";
+  const demoVideoSrc = "https://www.youtube.com/embed/VIDEO_ID";
 
   useEffect(() => {
     let isCancelled = false;
@@ -370,28 +371,17 @@ export default function Index() {
           <div className="mt-10 flex justify-center">
             <div className="seed-video-frame seed-surface w-full max-w-3xl">
               <div className="seed-ink-surface relative aspect-video">
-                <div className="seed-surface seed-ink-text absolute left-4 top-4 border-2 border-solid seed-border px-3 py-1 text-xs font-black uppercase tracking-[0.2em]">
+                <div className="seed-surface seed-ink-text absolute left-4 top-4 z-10 border-2 border-solid seed-border px-3 py-1 text-xs font-black uppercase tracking-[0.2em]">
                   1:00 Demo Video
                 </div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center">
-                  <div className="seed-orange-surface seed-ink-text flex h-16 w-16 items-center justify-center rounded-full border-4 border-solid seed-border">
-                    <svg
-                      aria-hidden="true"
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8 fill-current"
-                    >
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-black uppercase tracking-[0.2em]">
-                      Demo placeholder
-                    </p>
-                    <p className="seed-muted-light text-xs font-semibold">
-                      Swap in your 60-second walkthrough.
-                    </p>
-                  </div>
-                </div>
+                <iframe
+                  src={demoVideoSrc}
+                  title="Seedform demo video"
+                  className="absolute inset-0 h-full w-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="lazy"
+                />
               </div>
               <div className="seed-surface border-t border-solid seed-border px-5 py-4 text-sm font-semibold">
                 Claims, draft orders, and live status sync in one minute.
