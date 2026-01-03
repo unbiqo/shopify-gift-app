@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { animate, motion } from "framer-motion";
 import { redirect, useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
@@ -234,8 +234,6 @@ export default function Index() {
   const [typedText, setTypedText] = useState("");
   const accentColor = "var(--seed-orange)";
   const demoVideoSrc = "/Demo.mp4";
-  const videoRef = useRef(null);
-  const [playbackRate, setPlaybackRate] = useState(1);
 
   useEffect(() => {
     let isCancelled = false;
@@ -390,7 +388,6 @@ export default function Index() {
                   1:00 Demo Video
                 </div>
                 <video
-                  ref={videoRef}
                   src={demoVideoSrc}
                   className="absolute inset-0 h-full w-full"
                   controls
@@ -400,31 +397,6 @@ export default function Index() {
               </div>
               <div className="seed-surface border-t border-solid seed-border px-5 py-4 text-sm font-semibold">
                 Claims, draft orders, and live status sync in one minute.
-              </div>
-              <div className="seed-surface border-t border-solid seed-border px-5 py-3">
-                <div className="flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.15em]">
-                  <span className="seed-muted">Playback speed</span>
-                  {[1, 1.25, 1.5, 2].map((rate) => (
-                    <button
-                      key={rate}
-                      type="button"
-                      onClick={() => {
-                        setPlaybackRate(rate);
-                        if (videoRef.current) {
-                          videoRef.current.playbackRate = rate;
-                        }
-                      }}
-                      className={`border border-solid seed-border px-2 py-1 font-semibold transition-colors ${
-                        playbackRate === rate
-                          ? "seed-orange-surface"
-                          : "seed-surface hover:seed-orange-surface"
-                      }`}
-                      style={{ minWidth: "3.5rem" }}
-                    >
-                      {rate}x
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
           </div>
