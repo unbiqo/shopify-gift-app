@@ -9,6 +9,7 @@ export const action = async ({ request }) => {
     await authenticate.webhook(request);
   } catch (error) {
     console.error("Webhook auth failed", error);
+    return new Response(null, { status: 401 });
   }
   return new Response(null, { status: 200 });
 };

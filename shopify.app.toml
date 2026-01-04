@@ -2,7 +2,7 @@
 
 client_id = "15ae353b8f0f8255f3a643cb9515f77e"
 name = "Seedform - Influencer Gifting"
-application_url = "https://myseedform.vercel.app"
+application_url = "https://myseedform.vercel.app/"
 embedded = true
 
 [build]
