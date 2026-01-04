@@ -26,7 +26,7 @@ uri = "/webhooks/draft-orders"
 # MANDATORY PRIVACY WEBHOOKS
 [[webhooks.subscriptions]]
 compliance_topics = [ "customers/redact", "customers/data_request", "shop/redact" ]
-uri = "/webhooks/privacy"
+uri = "/webhooks/compliance"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
