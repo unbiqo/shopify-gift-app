@@ -26,7 +26,7 @@ model Session {
   refreshToken        String?
   refreshTokenExpires DateTime? @db.Timestamptz(6)
 
-  @@map("session")
+  @@map("Session")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
