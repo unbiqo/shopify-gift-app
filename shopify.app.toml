@@ -2,38 +2,45 @@
 
 client_id = "15ae353b8f0f8255f3a643cb9515f77e"
 name = "Seedform - Influencer Gifting"
-application_url = "https://myseedform.vercel.app/"
+application_url = "https://myseedform.vercel.app"
 embedded = true
-
-[build]
-automatically_update_urls_on_dev = true
 
 [webhooks]
 api_version = "2026-01"
 
-[[webhooks.subscriptions]]
-topics = [ "app/uninstalled", "app/scopes_update" ]
-uri = "/webhooks/app-lifecycle"
+  [[webhooks.subscriptions]]
+  topics = [ "fulfillments/create" ]
+  uri = "/webhooks/fulfillment-created"
 
-[[webhooks.subscriptions]]
-topics = [ "orders/create", "orders/cancelled", "fulfillments/create" ]
-uri = "/webhooks/orders"
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/redact", "customers/data_request", "shop/redact" ]
+  uri = "/webhooks/compliance"
 
-[[webhooks.subscriptions]]
-topics = [ "draft_orders/delete" ]
-uri = "/webhooks/draft-orders"
+  [[webhooks.subscriptions]]
+  topics = [ "draft_orders/delete" ]
+  uri = "/webhooks/draft-order-deleted"
 
-# MANDATORY PRIVACY WEBHOOKS
-[[webhooks.subscriptions]]
-compliance_topics = [ "customers/redact", "customers/data_request", "shop/redact" ]
-uri = "/webhooks/compliance"
+  [[webhooks.subscriptions]]
+  topics = [ "orders/cancelled" ]
+  uri = "/webhooks/order-cancelled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "orders/create" ]
+  uri = "/webhooks/order-created"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_fulfillments,read_inventory,read_orders,write_orders,read_products,read_customers,write_customers,write_draft_orders,read_draft_orders"
+scopes = "write_customers,write_draft_orders,read_fulfillments,read_inventory,read_orders,read_products"
+optional_scopes = [ ]
 use_legacy_install_flow = false
 
 [auth]
-redirect_urls = [
-  "https://myseedform.vercel.app/auth"
-]
+redirect_urls = [ "https://myseedform.vercel.app/auth" ]
