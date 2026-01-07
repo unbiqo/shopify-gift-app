@@ -18,7 +18,7 @@
     "prisma": "prisma",
     "graphql-codegen": "graphql-codegen",
     "vite": "vite",
-    "vercel-build": "prisma generate && react-router build"
+    "vercel-build": "prisma generate && prisma migrate deploy && react-router build"
   },
   "type": "module",
   "engines": {
