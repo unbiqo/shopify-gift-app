@@ -6,6 +6,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "react-router";
+import { Analytics } from "@vercel/analytics/react";
 import tailwindStyles from "./styles/tailwind.css?url";
 
 export const links = () => [{ rel: "stylesheet", href: tailwindStyles }];
@@ -74,6 +75,7 @@ gtag('config', '${gaMeasurementId}');
             __html: `window.__ENV = ${JSON.stringify(env)};`,
           }}
         />
+        <Analytics />
         <ScrollRestoration />
         <Scripts />
       </body>
