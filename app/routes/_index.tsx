@@ -816,7 +816,7 @@ export default function Index() {
                     htmlFor="whitelist-store"
                     className="text-xs font-black uppercase tracking-[0.2em]"
                   >
-                    Store URL
+                    Store URL (preferred)
                   </label>
                   <input
                     id="whitelist-store"
@@ -827,6 +827,9 @@ export default function Index() {
                     disabled={isSubmitting}
                     className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-base font-semibold"
                   />
+                  <p className="seed-muted text-xs font-semibold">
+                    Optional, but helps us prioritize access.
+                  </p>
                 </div>
                 <button
                   type="submit"
