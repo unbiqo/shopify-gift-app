@@ -21,12 +21,14 @@ export const loader = async () => {
       VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || "",
       VITE_SUPABASE_KEY: process.env.VITE_SUPABASE_KEY || "",
       VITE_GOOGLE_MAPS_KEY: process.env.VITE_GOOGLE_MAPS_KEY || "",
+      VITE_GA_MEASUREMENT_ID: process.env.VITE_GA_MEASUREMENT_ID || "",
     },
   };
 };
 
 export default function App() {
   const { env } = useLoaderData();
+  const gaMeasurementId = env.VITE_GA_MEASUREMENT_ID;
 
   return (
     <html lang="en">
@@ -44,6 +46,24 @@ export default function App() {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
         />
+        {gaMeasurementId ? (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaMeasurementId}');
+`,
+              }}
+            />
+          </>
+        ) : null}
         <Meta />
         <Links />
       </head>

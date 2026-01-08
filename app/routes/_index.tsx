@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { animate, motion } from "framer-motion";
-import { redirect, useLoaderData } from "react-router";
+import {
+  Form,
+  data as json,
+  redirect,
+  useActionData,
+  useLoaderData,
+  useNavigation,
+} from "react-router";
 import { authenticate } from "../shopify.server";
 
 const rotatingPhrases = [
@@ -13,6 +20,8 @@ const longestPhrase = rotatingPhrases.reduce(
   (longest, phrase) => (phrase.length > longest.length ? phrase : longest),
   ""
 );
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const featureCards = [
   {
@@ -227,8 +236,64 @@ export const loader = async ({ request }) => {
   return { ctaHref };
 };
 
+export const action = async ({ request }) => {
+  const formData = await request.formData();
+  const rawEmail = formData.get("email");
+  const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";
+
+  if (!email) {
+    return json({ ok: false, error: "Email is required." }, { status: 400 });
+  }
+
+  if (!emailPattern.test(email)) {
+    return json({ ok: false, error: "Enter a valid email address." }, { status: 400 });
+  }
+
+  const webhookUrl =
+    process.env.WHITELIST_WEBHOOK_URL || process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+
+  if (!webhookUrl) {
+    console.error("Missing WHITELIST_WEBHOOK_URL or GOOGLE_SHEETS_WEBHOOK_URL.");
+    return json(
+      { ok: false, error: "Whitelist is not configured yet." },
+      { status: 500 }
+    );
+  }
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        source: "landing",
+        submittedAt: new Date().toISOString(),
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("Whitelist webhook failed", { status: response.status });
+      return json(
+        { ok: false, error: "Something went wrong. Try again." },
+        { status: 500 }
+      );
+    }
+
+    return json({ ok: true });
+  } catch (error) {
+    console.error("Whitelist webhook error", error);
+    return json(
+      { ok: false, error: "Something went wrong. Try again." },
+      { status: 500 }
+    );
+  }
+};
+
 export default function Index() {
   const { ctaHref } = useLoaderData();
+  const actionData = useActionData();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
   const [influencers, setInfluencers] = useState(120);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
@@ -285,6 +350,47 @@ export default function Index() {
     };
   }, [phraseIndex]);
 
+  useEffect(() => {
+    if (!actionData?.ok) return;
+    if (typeof window === "undefined") return;
+    const gtag = window.gtag;
+    if (typeof gtag === "function") {
+      gtag("event", "whitelist_submit", { method: "email" });
+    }
+  }, [actionData]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let hasFired = false;
+    let rafId = null;
+
+    const handleScroll = () => {
+      if (hasFired || rafId) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null;
+        const scrollPosition = window.scrollY + window.innerHeight;
+        const docHeight = document.documentElement.scrollHeight;
+        if (!docHeight) return;
+        if (scrollPosition / docHeight >= 0.9) {
+          hasFired = true;
+          const gtag = window.gtag;
+          if (typeof gtag === "function") {
+            gtag("event", "read_to_end", { percent: 90 });
+          }
+          window.removeEventListener("scroll", handleScroll);
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      if (rafId) window.cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const oldHours = 4 + influencers * 0.4;
   const seedformHours = 1 + influencers * 0.08;
   const savedHours = Math.max(oldHours - seedformHours, 0);
@@ -293,6 +399,13 @@ export default function Index() {
   const handleScrollToCalculator = () => {
     if (typeof window === "undefined") return;
     const target = document.getElementById("calculator");
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleScrollToWhitelist = () => {
+    if (typeof window === "undefined") return;
+    const target = document.getElementById("whitelist");
     if (!target) return;
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -316,12 +429,13 @@ export default function Index() {
               </p>
             </div>
           </div>
-          <a
-            href={ctaHref}
+          <button
+            type="button"
+            onClick={handleScrollToWhitelist}
             className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-5 py-2 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
           >
-            Start Free Trial
-          </a>
+            Join Whitelist
+          </button>
         </div>
       </header>
 
@@ -365,12 +479,13 @@ export default function Index() {
               </span>
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <a
-                href={ctaHref}
+              <button
+                type="button"
+                onClick={handleScrollToWhitelist}
                 className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-6 py-3 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
               >
-                Start Free
-              </a>
+                Join Whitelist
+              </button>
               <button
                 type="button"
                 onClick={handleScrollToCalculator}
@@ -643,13 +758,81 @@ export default function Index() {
               </div>
             </div>
           </div>
-          <div className="mt-10 flex justify-center">
-            <a
-              href={ctaHref}
-              className="seed-orange-surface seed-shadow inline-flex w-full max-w-3xl items-center justify-center border-4 border-solid seed-border px-8 py-5 text-lg font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
-            >
-              Start Free
-            </a>
+        </motion.section>
+
+        <motion.section
+          id="whitelist"
+          className="mt-16 scroll-mt-[120px] border-t border-solid seed-border-muted pt-16"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={assembleSection}
+        >
+          <div className="seed-surface seed-shadow border-4 border-solid seed-border">
+            <div className="border-b border-solid seed-border px-6 py-6 md:px-8">
+              <p className="seed-muted text-xs font-black uppercase tracking-[0.2em]">
+                Whitelist
+              </p>
+              <h2 className="text-3xl font-black md:text-4xl">
+                Join the Seedform whitelist.
+              </h2>
+              <p className="seed-muted mt-3 max-w-2xl text-sm font-medium">
+                Be first in line when we open early access for Shopify gifting teams.
+              </p>
+            </div>
+            <div className="px-6 py-6 md:px-8">
+              <Form
+                method="post"
+                className="grid gap-4 md:grid-cols-[1.4fr_auto] md:items-end"
+              >
+                <div className="flex flex-col gap-2">
+                  <label
+                    htmlFor="whitelist-email"
+                    className="text-xs font-black uppercase tracking-[0.2em]"
+                  >
+                    Email
+                  </label>
+                  <input
+                    id="whitelist-email"
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="you@company.com"
+                    disabled={isSubmitting}
+                    className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-base font-semibold"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-6 py-3 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isSubmitting ? "Joining..." : "Join Whitelist"}
+                </button>
+              </Form>
+              <div className="mt-4 flex flex-col gap-2 text-sm font-semibold">
+                {actionData?.ok ? (
+                  <p className="seed-ink-text" role="status">
+                    You're on the list. We'll reach out with early access details.
+                  </p>
+                ) : actionData?.error ? (
+                  <p className="seed-orange-text" role="alert">
+                    {actionData.error}
+                  </p>
+                ) : (
+                  <p className="seed-muted">
+                    We only use your email for the whitelist. No spam.
+                  </p>
+                )}
+                <a
+                  href={ctaHref}
+                  className="seed-muted text-xs font-semibold uppercase tracking-[0.2em] underline underline-offset-4"
+                >
+                  Already have access? Log in
+                </a>
+              </div>
+            </div>
           </div>
         </motion.section>
       </main>
