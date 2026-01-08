@@ -215,7 +215,7 @@ export const loader = async ({ request }) => {
     return redirect(`/app${targetSearch}`);
   }
 
-  if (process.env.ENABLE_PUBLIC_CHECKOUT_AUTH === "true") {
+  if (process.env.ENABLE_PUBLIC_CHECKOUT_AUTH === "false") {
     try {
       const { sessionToken } = await authenticate.public.checkout(request);
       if (sessionToken?.dest) {
