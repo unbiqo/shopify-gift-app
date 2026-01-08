@@ -215,7 +215,7 @@ export const loader = async ({ request }) => {
     return redirect(`/app${targetSearch}`);
   }
 
-  if (process.env.ENABLE_PUBLIC_CHECKOUT_AUTH === "false") {
+  if (process.env.ENABLE_PUBLIC_CHECKOUT_AUTH === "true") {
     try {
       const { sessionToken } = await authenticate.public.checkout(request);
       if (sessionToken?.dest) {
@@ -239,7 +239,12 @@ export const loader = async ({ request }) => {
 export const action = async ({ request }) => {
   const formData = await request.formData();
   const rawEmail = formData.get("email");
+  const rawStoreUrl = formData.get("storeUrl");
+  const rawMonthlyVolume = formData.get("monthlyVolume");
   const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";
+  const storeUrl = typeof rawStoreUrl === "string" ? rawStoreUrl.trim() : "";
+  const monthlyVolume =
+    typeof rawMonthlyVolume === "string" ? rawMonthlyVolume.trim() : "";
 
   if (!email) {
     return json({ ok: false, error: "Email is required." }, { status: 400 });
@@ -266,6 +271,8 @@ export const action = async ({ request }) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email,
+        storeUrl,
+        monthlyVolume,
         source: "landing",
         submittedAt: new Date().toISOString(),
       }),
@@ -434,7 +441,7 @@ export default function Index() {
             onClick={handleScrollToWhitelist}
             className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-5 py-2 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
           >
-            Join Whitelist
+            Request Access
           </button>
         </div>
       </header>
@@ -484,7 +491,7 @@ export default function Index() {
                 onClick={handleScrollToWhitelist}
                 className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-6 py-3 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
               >
-                Join Whitelist
+                Request Access
               </button>
               <button
                 type="button"
@@ -771,20 +778,20 @@ export default function Index() {
           <div className="seed-surface seed-shadow border-4 border-solid seed-border">
             <div className="border-b border-solid seed-border px-6 py-6 md:px-8">
               <p className="seed-muted text-xs font-black uppercase tracking-[0.2em]">
-                Whitelist
+                Early access
               </p>
               <h2 className="text-3xl font-black md:text-4xl">
-                Join the Seedform whitelist.
+                Request access to Seedform.
               </h2>
               <p className="seed-muted mt-3 max-w-2xl text-sm font-medium">
-                Be first in line when we open early access for Shopify gifting teams.
+                Tell us about your store so we can prioritize the best fit.
               </p>
             </div>
             <div className="px-6 py-6 md:px-8">
               <Form
                 method="post"
                 action="?index"
-                className="grid gap-4 md:grid-cols-[1.4fr_auto] md:items-end"
+                className="grid gap-4 md:grid-cols-[1.2fr_1fr_auto] md:items-end"
               >
                 <div className="flex flex-col gap-2">
                   <label
@@ -804,18 +811,56 @@ export default function Index() {
                     className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-base font-semibold"
                   />
                 </div>
+                <div className="flex flex-col gap-2">
+                  <label
+                    htmlFor="whitelist-store"
+                    className="text-xs font-black uppercase tracking-[0.2em]"
+                  >
+                    Store URL
+                  </label>
+                  <input
+                    id="whitelist-store"
+                    name="storeUrl"
+                    type="url"
+                    autoComplete="url"
+                    placeholder="your-store.myshopify.com"
+                    disabled={isSubmitting}
+                    className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-base font-semibold"
+                  />
+                </div>
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-6 py-3 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {isSubmitting ? "Joining..." : "Join Whitelist"}
+                  {isSubmitting ? "Sending..." : "Request Access"}
                 </button>
+                <div className="flex flex-col gap-2 md:col-span-3">
+                  <label
+                    htmlFor="whitelist-volume"
+                    className="text-xs font-black uppercase tracking-[0.2em]"
+                  >
+                    Monthly gifting volume
+                  </label>
+                  <select
+                    id="whitelist-volume"
+                    name="monthlyVolume"
+                    defaultValue="unsure"
+                    disabled={isSubmitting}
+                    className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-base font-semibold"
+                  >
+                    <option value="unsure">Not sure yet</option>
+                    <option value="lt-50">Under 50 orders</option>
+                    <option value="50-200">50-200 orders</option>
+                    <option value="200-1000">200-1000 orders</option>
+                    <option value="gt-1000">1000+ orders</option>
+                  </select>
+                </div>
               </Form>
               <div className="mt-4 flex flex-col gap-2 text-sm font-semibold">
                 {actionData?.ok ? (
                   <p className="seed-ink-text" role="status">
-                    You're on the list. We'll reach out with early access details.
+                    Thanks. We'll review and reach out with next steps.
                   </p>
                 ) : actionData?.error ? (
                   <p className="seed-orange-text" role="alert">
@@ -823,7 +868,7 @@ export default function Index() {
                   </p>
                 ) : (
                   <p className="seed-muted">
-                    We only use your email for the whitelist. No spam.
+                    We only use this info to prioritize early access. No spam.
                   </p>
                 )}
                 <a
