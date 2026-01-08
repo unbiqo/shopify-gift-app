@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { animate, motion } from "framer-motion";
 import {
   Form,
@@ -22,6 +22,21 @@ const longestPhrase = rotatingPhrases.reduce(
 );
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const landingSections = [
+  { id: "hero", name: "hero" },
+  { id: "calculator", name: "calculator" },
+  { id: "hard-truth", name: "hard_truth" },
+  { id: "whitelist", name: "whitelist" },
+];
+
+const trackEvent = (eventName, params = {}) => {
+  if (typeof window === "undefined") return;
+  const gtag = window.gtag;
+  if (typeof gtag === "function") {
+    gtag("event", eventName, params);
+  }
+};
 
 const featureCards = [
   {
@@ -301,6 +316,8 @@ export default function Index() {
   const actionData = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+  const sectionStartTimesRef = useRef({});
+  const sectionSeenRef = useRef(new Set());
   const [influencers, setInfluencers] = useState(120);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
@@ -359,11 +376,7 @@ export default function Index() {
 
   useEffect(() => {
     if (!actionData?.ok) return;
-    if (typeof window === "undefined") return;
-    const gtag = window.gtag;
-    if (typeof gtag === "function") {
-      gtag("event", "whitelist_submit", { method: "email" });
-    }
+    trackEvent("whitelist_submit", { method: "email" });
   }, [actionData]);
 
   useEffect(() => {
@@ -380,10 +393,7 @@ export default function Index() {
         if (!docHeight) return;
         if (scrollPosition / docHeight >= 0.9) {
           hasFired = true;
-          const gtag = window.gtag;
-          if (typeof gtag === "function") {
-            gtag("event", "read_to_end", { percent: 90 });
-          }
+          trackEvent("read_to_end", { percent: 90 });
           window.removeEventListener("scroll", handleScroll);
         }
       });
@@ -398,19 +408,93 @@ export default function Index() {
     };
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const sectionStarts = sectionStartTimesRef.current;
+    const sectionSeen = sectionSeenRef.current;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const sectionName = entry.target.dataset.sectionName;
+          if (!sectionName) return;
+
+          if (entry.isIntersecting) {
+            if (!sectionSeen.has(sectionName)) {
+              sectionSeen.add(sectionName);
+              trackEvent("section_view", { section: sectionName });
+            }
+            if (!sectionStarts[sectionName]) {
+              sectionStarts[sectionName] = performance.now();
+            }
+            return;
+          }
+
+          if (!sectionStarts[sectionName]) return;
+          const durationMs = performance.now() - sectionStarts[sectionName];
+          sectionStarts[sectionName] = null;
+          trackEvent("section_time", {
+            section: sectionName,
+            seconds: Math.round(durationMs / 100) / 10,
+          });
+        });
+      },
+      { threshold: 0.4 }
+    );
+
+    landingSections.forEach(({ id }) => {
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
+
+    const flushVisibleSection = (reason) => {
+      const now = performance.now();
+      Object.entries(sectionStarts).forEach(([sectionName, start]) => {
+        if (!start) return;
+        const durationMs = now - start;
+        sectionStarts[sectionName] = null;
+        trackEvent("section_time", {
+          section: sectionName,
+          seconds: Math.round(durationMs / 100) / 10,
+          reason,
+        });
+      });
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        flushVisibleSection("hidden");
+      }
+    };
+
+    const handlePageHide = () => flushVisibleSection("pagehide");
+
+    window.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, []);
+
   const oldHours = 4 + influencers * 0.4;
   const seedformHours = 1 + influencers * 0.08;
   const savedHours = Math.max(oldHours - seedformHours, 0);
   const formatHours = (value) => value.toFixed(1);
 
-  const handleScrollToCalculator = () => {
+  const handleScrollToCalculator = (location = "cta") => {
+    trackEvent("cta_click", { label: "calculate_roi", location });
     if (typeof window === "undefined") return;
     const target = document.getElementById("calculator");
     if (!target) return;
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleScrollToWhitelist = () => {
+  const handleScrollToWhitelist = (location = "cta") => {
+    trackEvent("cta_click", { label: "request_access", location });
     if (typeof window === "undefined") return;
     const target = document.getElementById("whitelist");
     if (!target) return;
@@ -438,7 +522,7 @@ export default function Index() {
           </div>
           <button
             type="button"
-            onClick={handleScrollToWhitelist}
+            onClick={() => handleScrollToWhitelist("header")}
             className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-5 py-2 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
           >
             Request Access
@@ -447,7 +531,11 @@ export default function Index() {
       </header>
 
       <main className="mx-auto max-w-6xl border-l border-r border-solid seed-border-muted px-4 pb-20 pt-12 md:px-8 lg:pt-16">
-        <section className="relative border-t border-solid seed-border-muted py-10 lg:py-16">
+        <section
+          id="hero"
+          data-section-name="hero"
+          className="relative border-t border-solid seed-border-muted py-10 lg:py-16"
+        >
           <div
             aria-hidden="true"
             className="seed-orange-surface pointer-events-none absolute -right-6 top-10 h-16 w-16"
@@ -488,14 +576,14 @@ export default function Index() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <button
                 type="button"
-                onClick={handleScrollToWhitelist}
+                onClick={() => handleScrollToWhitelist("hero")}
                 className="seed-orange-surface seed-shadow inline-flex items-center justify-center border-4 border-solid seed-border px-6 py-3 text-sm font-black uppercase tracking-wide transition-transform hover:-translate-y-0.5"
               >
                 Request Access
               </button>
               <button
                 type="button"
-                onClick={handleScrollToCalculator}
+                onClick={() => handleScrollToCalculator("hero")}
                 className="seed-surface seed-shadow-sm inline-flex items-center justify-center border-2 border-solid seed-border px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-transform hover:-translate-y-0.5"
               >
                 Calculate ROI
@@ -546,6 +634,7 @@ export default function Index() {
 
         <motion.section
           id="calculator"
+          data-section-name="calculator"
           className="mt-16 scroll-mt-[120px] border-t border-solid seed-border-muted pt-16"
           initial="hidden"
           whileInView="show"
@@ -638,6 +727,8 @@ export default function Index() {
         </motion.section>
 
         <motion.section
+          id="hard-truth"
+          data-section-name="hard_truth"
           className="mt-16 border-t border-solid seed-border-muted pt-16"
           initial="hidden"
           whileInView="show"
@@ -769,6 +860,7 @@ export default function Index() {
 
         <motion.section
           id="whitelist"
+          data-section-name="whitelist"
           className="mt-16 scroll-mt-[120px] border-t border-solid seed-border-muted pt-16"
           initial="hidden"
           whileInView="show"
@@ -791,6 +883,7 @@ export default function Index() {
               <Form
                 method="post"
                 action="?index"
+                onSubmit={() => trackEvent("whitelist_submit_attempt", { method: "email" })}
                 className="grid gap-4 md:grid-cols-[1.2fr_1fr_auto] md:items-end"
               >
                 <div className="flex flex-col gap-2">
@@ -879,6 +972,9 @@ export default function Index() {
                 )}
                 <a
                   href={ctaHref}
+                  onClick={() =>
+                    trackEvent("cta_click", { label: "login", location: "whitelist" })
+                  }
                   className="seed-muted text-xs font-semibold uppercase tracking-[0.2em] underline underline-offset-4"
                 >
                   Already have access? Log in
