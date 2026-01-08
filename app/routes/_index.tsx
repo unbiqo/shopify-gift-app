@@ -215,19 +215,21 @@ export const loader = async ({ request }) => {
     return redirect(`/app${targetSearch}`);
   }
 
-  try {
-    const { sessionToken } = await authenticate.public.checkout(request);
-    if (sessionToken?.dest) {
-      const target = queryString ? `/app?${queryString}` : "/app";
-      return redirect(target);
-    }
-  } catch (error) {
-    if (error instanceof Response) {
-      if (error.status !== 401 && error.status !== 410) {
+  if (process.env.ENABLE_PUBLIC_CHECKOUT_AUTH === "true") {
+    try {
+      const { sessionToken } = await authenticate.public.checkout(request);
+      if (sessionToken?.dest) {
+        const target = queryString ? `/app?${queryString}` : "/app";
+        return redirect(target);
+      }
+    } catch (error) {
+      if (error instanceof Response) {
+        if (error.status !== 401 && error.status !== 410) {
+          throw error;
+        }
+      } else {
         throw error;
       }
-    } else {
-      throw error;
     }
   }
 
