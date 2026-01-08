@@ -781,6 +781,7 @@ export default function Index() {
             <div className="px-6 py-6 md:px-8">
               <Form
                 method="post"
+                action="?index"
                 className="grid gap-4 md:grid-cols-[1.4fr_auto] md:items-end"
               >
                 <div className="flex flex-col gap-2">
