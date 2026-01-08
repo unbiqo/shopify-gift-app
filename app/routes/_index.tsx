@@ -810,6 +810,9 @@ export default function Index() {
                     disabled={isSubmitting}
                     className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-base font-semibold"
                   />
+                  <p className="seed-muted text-xs font-semibold min-h-[1rem]" aria-hidden="true">
+                    &nbsp;
+                  </p>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label
@@ -827,7 +830,7 @@ export default function Index() {
                     disabled={isSubmitting}
                     className="seed-surface seed-shadow-sm border-2 border-solid seed-border px-4 py-3 text-base font-semibold"
                   />
-                  <p className="seed-muted text-xs font-semibold">
+                  <p className="seed-muted text-xs font-semibold min-h-[1rem]">
                     Optional, but helps us prioritize access.
                   </p>
                 </div>
@@ -871,7 +874,7 @@ export default function Index() {
                   </p>
                 ) : (
                   <p className="seed-muted">
-                    We only use this info to prioritize early access. No spam.
+                    We only use this info to prioritize early access.
                   </p>
                 )}
                 <a
