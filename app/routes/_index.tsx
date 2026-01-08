@@ -223,7 +223,7 @@ export const loader = async ({ request }) => {
     }
   } catch (error) {
     if (error instanceof Response) {
-      if (error.status !== 401) {
+      if (error.status !== 401 && error.status !== 410) {
         throw error;
       }
     } else {
